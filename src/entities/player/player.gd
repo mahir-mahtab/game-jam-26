@@ -79,8 +79,7 @@ func _physics_process(_delta: float) -> void:
 	
 	if stuck_to != null:
 		velocity = Vector2.ZERO
-		var center_offset = Vector2(0, -35)
-		global_position = (stuck_to.global_position + stuck_offset) - center_offset
+		global_position = stuck_to.global_position + stuck_offset
 		return
 
 	if projectile_active:
@@ -149,9 +148,7 @@ func launch_projectile() -> void:
 func stick_to_prey(prey_node: Node2D) -> void:
 	projectile_active = false
 	stuck_to = prey_node
-	# Use the same -35 vertical offset for consistent sticking at center
-	var center_offset = Vector2(0, -35)
-	stuck_offset = (global_position + center_offset) - prey_node.global_position
+	stuck_offset = global_position - prey_node.global_position
 	velocity = Vector2.ZERO
 	# 2. Access the PREY'S shape (if you actually want the prey to stop colliding)
 	var prey_shape = prey_node.get_node_or_null("CollisionShape2D") 
@@ -172,9 +169,8 @@ func update_trajectory_dots() -> void:
 			dot.visible = false
 		return
 	
-	# Start from player's center (relative to the player node)
-	var start_local_pos = Vector2(0, -35)
-	var start_global_pos = global_position + start_local_pos
+	# Start from player's center
+	var start_global_pos = global_position
 
 	var mouse_pos = get_global_mouse_position()
 	var ray_direction = (mouse_pos - start_global_pos).normalized()
@@ -225,9 +221,7 @@ func launch_tongue() -> void:
 	
 	# Make tongue visible and initialize it
 	if tongue_line:
-		# Start from player's center offset used in trajectory dots
-		var start_local_pos = Vector2(0, -35)
-		tongue_line.position = start_local_pos
+		tongue_line.position = Vector2.ZERO
 		
 		tongue_line.visible = true
 		tongue_line.clear_points()
@@ -239,8 +233,7 @@ func update_tongue_physics(delta: float) -> void:
 	if not tongue_active or not tongue_line:
 		return
 	
-	var start_local_pos = Vector2(0, -35)
-	var start_global_pos = global_position + start_local_pos
+	var start_global_pos = global_position
 	
 	if tongue_extending:
 		# Extend tongue outward
@@ -314,8 +307,7 @@ func update_prey_pull(delta: float) -> void:
 	if caught_prey == null or not tongue_retracting:
 		return
 	
-	var start_local_pos = Vector2(0, -35)
-	var start_global_pos = global_position + start_local_pos
+	var start_global_pos = global_position
 	
 	# Calculate target position (tongue tip in global coordinates)
 	var tongue_tip_global = start_global_pos + (tongue_direction * tongue_current_length)
@@ -347,8 +339,7 @@ func finish_tongue_action() -> void:
 			prey.set_pulled_state(false)
 		
 		# Place prey at tongue start position (player center) for immediate sticking
-		var start_local_pos = Vector2(0, -35)
-		prey.global_position = global_position + start_local_pos
+		prey.global_position = global_position
 		
 		# Use existing sticking logic to attach player to prey
 		stick_to_prey(prey)

@@ -6,14 +6,23 @@ extends Control
 # Path to your main game scene (update this when you create it)
 const GAME_SCENE_PATH = "res://src/ui/gam/game.tscn"
 
-@onready var play_button = $CenterContainer/VBoxContainer/PlayButton
-@onready var options_button = $CenterContainer/VBoxContainer/OptionsButton
-@onready var credits_button = $CenterContainer/VBoxContainer/CreditsButton
-@onready var quit_button = $CenterContainer/VBoxContainer/QuitButton
-
+@onready var menu_options = $MarginContainer/VBoxContainer/MenuOptions
+@onready var play_button = $MarginContainer/VBoxContainer/MenuOptions/PlayButton
+@onready var options_button = $MarginContainer/VBoxContainer/MenuOptions/OptionsButton
+@onready var credits_button = $MarginContainer/VBoxContainer/MenuOptions/CreditsButton
+@onready var quit_button = $MarginContainer/VBoxContainer/MenuOptions/QuitButton
 
 func _ready():
-	# Focus the play button by default for keyboard/gamepad navigation
+	# Initial state for animation
+	menu_options.modulate.a = 0
+	$MarginContainer/VBoxContainer/TitleLabel.modulate.a = 0
+	
+	# Simple fade-in animation using Tween
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property($MarginContainer/VBoxContainer/TitleLabel, "modulate:a", 1.0, 1.0)
+	tween.tween_property(menu_options, "modulate:a", 1.0, 1.0).set_delay(0.5)
+	
 	play_button.grab_focus()
 	
 	# Hide quit button on web builds
