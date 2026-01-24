@@ -1,8 +1,9 @@
-[gd_scene load_steps=16 format=3 uid="uid://cadnjm2kabw85"]
+[gd_scene load_steps=17 format=3 uid="uid://cadnjm2kabw85"]
 
 [ext_resource type="Texture2D" uid="uid://btus0dng0u6j8" path="res://assets/Units/Red Units/Archer/Archer_Idle.png" id="1_4m8ck"]
 [ext_resource type="Script" uid="uid://bh6dqam4yrryn" path="res://src/entities/player/player.gd" id="1_vt6n5"]
 [ext_resource type="Texture2D" uid="uid://dc24olrtfiwfc" path="res://assets/Units/Red Units/Archer/Archer_Run.png" id="3_muk8e"]
+[ext_resource type="Texture2D" uid="uid://c7tv7d3bb4ep5" path="res://icon.svg" id="4_dot_icon"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vt6n5"]
 atlas = ExtResource("1_4m8ck")
@@ -95,7 +96,8 @@ height = 70.0
 script = ExtResource("1_vt6n5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(-2, -34)
+position = Vector2(0, -33)
+scale = Vector2(1, 1.03125)
 sprite_frames = SubResource("SpriteFrames_eb65w")
 animation = &"run"
 autoplay = "idle"
@@ -103,3 +105,10 @@ autoplay = "idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -35)
 shape = SubResource("CapsuleShape2D_4f0qm")
+
+[node name="TrajectoryDots" type="Node2D" parent="."]
+
+[node name="DotTemplate" type="Sprite2D" parent="TrajectoryDots"]
+visible = false
+scale = Vector2(0.12, 0.12)
+texture = ExtResource("4_dot_icon")
