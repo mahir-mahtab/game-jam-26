@@ -103,12 +103,11 @@ animation = &"run"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -35)
+position = Vector2(6, -35)
 shape = SubResource("CapsuleShape2D_4f0qm")
 
 [node name="TrajectoryDots" type="Node2D" parent="."]
 
 [node name="DotTemplate" type="Sprite2D" parent="TrajectoryDots"]
-visible = false
 scale = Vector2(0.12, 0.12)
 texture = ExtResource("4_dot_icon")
