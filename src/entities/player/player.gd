@@ -305,7 +305,7 @@ func _unstick() -> void:
 
 func _catch_prey(prey_node: CharacterBody2D) -> void:
 	caught_prey = prey_node
-	if camera: camera.add_trauma(0.01)
+	if camera: camera.trigger_shake()
 	prints(camera)
 	var prey_shape = prey_node.get_node_or_null("CollisionShape2D")
 	if prey_shape:

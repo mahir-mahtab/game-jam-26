@@ -769,6 +769,9 @@ position = Vector2(0, -21)
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
 script = ExtResource("2_hu3l3")
+decay = null
+max_offset = null
+max_roll = null
 
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
 
