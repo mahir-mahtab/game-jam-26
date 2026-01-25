@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://cn5grbfvofuao"]
+[gd_scene load_steps=9 format=3 uid="uid://cn5grbfvofuao"]
 
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="1_dmd6i"]
 [ext_resource type="Texture2D" uid="uid://3fr8rc2jjx64" path="res://assets/Terrain/Tileset/Tilemap_color1.png" id="2_fiond"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="3_2qfqk"]
+[ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="4_hud"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dmd6i"]
 
@@ -766,6 +767,8 @@ position = Vector2(578, 316)
 position = Vector2(0, -21)
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
+
+[node name="HUD" parent="." instance=ExtResource("4_hud")]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(305, 380)

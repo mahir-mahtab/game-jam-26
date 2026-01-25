@@ -4,8 +4,8 @@ const SPEED = 300.0
 const DOT_SPACING = 21.0
 const MAX_LENGTH = 1000.0
 const DOT_SCALE = 0.02
-const PROJECTILE_SPEED = 1000.0
-const PROJECTILE_DECELERATION = 600.0
+const PROJECTILE_SPEED = 500.0
+const PROJECTILE_DECELERATION = 200.0
 const BOUNCE_DAMPING = 0.6
 
 # Tongue projectile constants
@@ -43,7 +43,7 @@ func _ready() -> void:
 		var dot := dot_template.duplicate() as Sprite2D
 		dot.visible = true
 		
-		dot.scale = Vector2.ONE * DOT_SCALE /(1+i/10)
+		dot.scale = Vector2.ONE * DOT_SCALE*1.0 /(1+(i*1.0)/10)
 		dots_container.add_child(dot)
 		dots.append(dot)
 	
@@ -119,10 +119,9 @@ func _physics_process(_delta: float) -> void:
 		animated_sprite.play("idle")
 
 	move_and_slide()
-	update_trajectory_dots()
 
 func _process(_delta: float) -> void:
-	# Always update trajectory dots regardless of state
+	# Only show trajectory when stuck and not currently projecting or using tongue
 	update_trajectory_dots()
 
 func _input(event: InputEvent) -> void:
@@ -133,7 +132,7 @@ func _input(event: InputEvent) -> void:
 	
 	# Right-click: Launch tongue to grab prey
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		if not tongue_active and not projectile_active:
+		if not tongue_active and stuck_to == null:
 			launch_tongue()
 		
 
@@ -164,8 +163,8 @@ func unstick_from_prey() -> void:
 	stuck_offset = Vector2.ZERO
 
 func update_trajectory_dots() -> void:
-	# Hide trajectory dots when tongue is active
-	if tongue_active:
+	# Only show trajectory when stuck and not projecting or using tongue
+	if stuck_to == null or projectile_active or tongue_active:
 		for dot in dots:
 			dot.visible = false
 		return
@@ -182,7 +181,7 @@ func update_trajectory_dots() -> void:
 	var current_dir = direction
 
 	var dot_index = 0
-	var max_bounces = 3  # Limit reflections to avoid infinite loop
+	var max_bounces = 1  # Limit reflections to avoid infinite loop
 
 	while remaining_length > 0 and dot_index < dots.size() and max_bounces >= 0:
 		var ray_end = current_pos + current_dir * remaining_length
@@ -226,8 +225,13 @@ func update_trajectory_dots() -> void:
 
 func launch_tongue() -> void:
 	"""Launch tongue projectile towards mouse cursor"""
-	if tongue_active or projectile_active or stuck_to != null:
+	if tongue_active or stuck_to != null:
 		return
+	
+	# Auto-cancel projectile if tongue is used mid-flight
+	if projectile_active:
+		projectile_active = false
+		velocity = Vector2.ZERO
 	
 	# Calculate direction from player to mouse
 	var dir = (get_global_mouse_position() - global_position).normalized()
@@ -311,6 +315,8 @@ func update_tongue_physics(delta: float) -> void:
 
 func catch_prey(prey_node: CharacterBody2D) -> void:
 	"""Called when tongue collides with prey"""
+	projectile_active = false
+	velocity = Vector2.ZERO
 	caught_prey = prey_node
 	tongue_extending = false
 	tongue_retracting = true
