@@ -2,6 +2,8 @@ extends CanvasLayer
 
 @onready var feedback_label: Label = $MarginContainer/VBoxContainer/FeedbackLabel
 @onready var charge_indicator: ProgressBar = $MarginContainer/VBoxContainer/ChargeIndicator
+@onready var health_bar: ProgressBar = $MarginContainer/VBoxContainer/HealthBar
+@onready var health_label: Label = $MarginContainer/VBoxContainer/HealthBar/HealthLabel
 
 var player: CharacterBody2D = null
 
@@ -24,20 +26,36 @@ func _find_player() -> CharacterBody2D:
 	return null
 
 func _update_display() -> void:
-	if feedback_label == null or charge_indicator == null:
+	if feedback_label == null or charge_indicator == null or health_bar == null or health_label == null:
 		return
 	if player == null or not is_instance_valid(player):
 		feedback_label.text = "Projectile: ?"
 		charge_indicator.value = 0.0
+		health_bar.value = 0.0
+		health_label.text = "Health: ?"
 		return
-	var stuck_to = player.get("stuck_to")
-	var projectile_active = player.get("projectile_active")
-	if projectile_active:
+
+	_update_health_display()
+	
+	# Use public API methods
+	if player.has_method("is_projectile_active") and player.is_projectile_active():
 		feedback_label.text = "Projectile: IN FLIGHT"
 		charge_indicator.value = 0.0
-	elif stuck_to != null:
+	elif player.has_method("is_tongue_active") and player.is_tongue_active():
+		feedback_label.text = "Tongue: ACTIVE"
+		charge_indicator.value = 1.0
+	elif player.has_method("is_stuck") and player.is_stuck():
 		feedback_label.text = "Projectile: READY (stuck)"
 		charge_indicator.value = 2.0
 	else:
-		feedback_label.text = "Projectile: LOCKED (find prey)"
+		feedback_label.text = "Tongue: READY (find prey)"
 		charge_indicator.value = 0.0
+
+func _update_health_display() -> void:
+	if not player.has_method("get_health") or not player.has_method("get_max_health"):
+		return
+	var current = float(player.get_health())
+	var maximum = float(player.get_max_health())
+	health_bar.max_value = maximum
+	health_bar.value = current
+	health_label.text = "Health: %d / %d" % [int(round(current)), int(round(maximum))]
