@@ -22,7 +22,7 @@ const DOT_SCALE = 0.02
 const PROJECTILE_SPEED = 800.0
 const PROJECTILE_DECELERATION = 50.0
 const BOUNCE_DAMPING = 0.8
-const MAX_BOUNCE_FOR_PLAYER=2
+const MAX_BOUNCE_FOR_PLAYER = 2
 
 const MAX_HEALTH = 100.0
 const HEALTH_DECAY_PER_SEC = 10.0
@@ -54,6 +54,8 @@ var tongue_line: Line2D = null
 var dots: Array[Sprite2D] = []
 
 var health := MAX_HEALTH
+
+var bounce_count := 0
 
 # Stuck state data
 var stuck_to: Node2D = null
@@ -137,10 +139,10 @@ func _process_moving(_delta: float) -> void:
 
 func _process_projectile(delta: float) -> void:
 	var current_speed = velocity.length()
-	var bounce=0
 	# Stop if too slow
 	if current_speed < 10.0:
 		velocity = Vector2.ZERO
+		bounce_count = 0
 		_change_state(State.IDLE)
 		return
 	
@@ -156,9 +158,9 @@ func _process_projectile(delta: float) -> void:
 			_stick_to_prey(collider)
 		else:
 			velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
-			bounce=bounce+1;
-			if(bounce==MAX_BOUNCE_FOR_PLAYER):
-				velocity=velocity*.1
+			bounce_count += 1
+			if bounce_count >= MAX_BOUNCE_FOR_PLAYER:
+				velocity *= 0.1
 
 func _process_stuck(_delta: float) -> void:
 	velocity = Vector2.ZERO
@@ -226,7 +228,8 @@ func _change_state(new_state: State) -> void:
 	# Exit old state
 	match old_state:
 		State.PROJECTILE:
-			pass  # No cleanup needed
+			if new_state != State.PROJECTILE:
+				bounce_count = 0
 		State.STUCK:
 			pass  # Cleanup handled by _unstick()
 		State.TONGUE_EXTEND, State.TONGUE_RETRACT:
@@ -257,6 +260,7 @@ func _launch_projectile() -> void:
 	if dir == Vector2.ZERO:
 		dir = Vector2.RIGHT
 	velocity = dir * PROJECTILE_SPEED
+	bounce_count = 0
 	_change_state(State.PROJECTILE)
 
 func _launch_tongue() -> void:
