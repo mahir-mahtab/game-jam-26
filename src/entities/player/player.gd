@@ -155,13 +155,19 @@ func _process_projectile(delta: float) -> void:
 	var collision = move_and_collide(velocity * delta)
 	if collision:
 		var collider = collision.get_collider()
-		if collider != null and collider.is_in_group("prey"):
-			_stick_to_prey(collider)
-		else:
-			velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
-			bounce_count += 1
-			if bounce_count >= MAX_BOUNCE_FOR_PLAYER:
-				velocity *= 0.1
+		if collider != null:
+			if collider.is_in_group("prey"):
+				_stick_to_prey(collider)
+			elif collider.is_in_group("breakingwall"):
+				if collider.has_method("break_wall"):
+					collider.break_wall()
+				velocity = velocity * .8
+				
+			else:
+				velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
+				bounce_count += 1
+				if bounce_count >= MAX_BOUNCE_FOR_PLAYER:
+					velocity *= 0.1
 
 func _process_stuck(_delta: float) -> void:
 	velocity = Vector2.ZERO
