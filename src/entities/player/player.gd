@@ -27,10 +27,10 @@ const MAX_BOUNCE_FOR_PLAYER = 2
 const MAX_HEALTH = 100.0
 const HEALTH_DECAY_PER_SEC = 10.0
 
-const TONGUE_SPEED = 1500.0
+const TONGUE_SPEED = 5000.0
 const TONGUE_MAX_LENGTH = 1000.0
 const TONGUE_RETRACT_SPEED = 2000.0
-const PREY_PULL_SPEED = 800.0
+const PREY_PULL_SPEED = 500.0
 const TONGUE_WIDTH = 3.0
 
 # ===== State Enum =====
@@ -47,6 +47,7 @@ enum State {
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var dots_container: Node2D = $TrajectoryDots
 @onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
+@onready var camera : Camera2D=$Camera2D
 
 # ===== State Variables =====
 var current_state: State = State.IDLE
@@ -304,7 +305,8 @@ func _unstick() -> void:
 
 func _catch_prey(prey_node: CharacterBody2D) -> void:
 	caught_prey = prey_node
-	
+	if camera: camera.add_trauma(0.01)
+	prints(camera)
 	var prey_shape = prey_node.get_node_or_null("CollisionShape2D")
 	if prey_shape:
 		prey_shape.set_deferred("disabled", true)
