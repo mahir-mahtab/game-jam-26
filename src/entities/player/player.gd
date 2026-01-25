@@ -1,9 +1,9 @@
 extends CharacterBody2D
 
 const SPEED = 300.0
-const DOT_SPACING = 18.0
+const DOT_SPACING = 21.0
 const MAX_LENGTH = 1000.0
-const DOT_SCALE = 0.12
+const DOT_SCALE = 0.02
 const PROJECTILE_SPEED = 1000.0
 const PROJECTILE_DECELERATION = 600.0
 const BOUNCE_DAMPING = 0.6
@@ -42,7 +42,8 @@ func _ready() -> void:
 	for i in range(max_dots):
 		var dot := dot_template.duplicate() as Sprite2D
 		dot.visible = true
-		dot.scale = Vector2.ONE * DOT_SCALE
+		
+		dot.scale = Vector2.ONE * DOT_SCALE /(1+i/10)
 		dots_container.add_child(dot)
 		dots.append(dot)
 	
@@ -168,36 +169,58 @@ func update_trajectory_dots() -> void:
 		for dot in dots:
 			dot.visible = false
 		return
-	
-	# Start from player's center
-	var start_global_pos = global_position
 
+	var start_pos = global_position
 	var mouse_pos = get_global_mouse_position()
-	var ray_direction = (mouse_pos - start_global_pos).normalized()
-	if ray_direction == Vector2.ZERO:
-		ray_direction = Vector2.RIGHT
+	var direction = (mouse_pos - start_pos).normalized()
+	if direction == Vector2.ZERO:
+		direction = Vector2.RIGHT
 
 	var space_state = get_world_2d().direct_space_state
-	var end_global = start_global_pos + ray_direction * MAX_LENGTH
-	var query = PhysicsRayQueryParameters2D.create(start_global_pos, end_global)
-	query.exclude = [get_rid()] # Exclude the player
-	var result = space_state.intersect_ray(query)
+	var remaining_length = MAX_LENGTH
+	var current_pos = start_pos
+	var current_dir = direction
 
-	var hit_length := MAX_LENGTH
-	if result:
-		hit_length = start_global_pos.distance_to(result.position)
+	var dot_index = 0
+	var max_bounces = 3  # Limit reflections to avoid infinite loop
 
-	for i in range(dots.size()):
-		var dist := (i + 1) * DOT_SPACING
-		var dot := dots[i]
-		if dist > hit_length:
-			dot.visible = false
-			continue
-		var dot_global = start_global_pos + ray_direction * dist
-		dot.global_position = dot_global
-		var alpha = clamp(1.0 - (dist / MAX_LENGTH), 0.0, 1.0)
-		dot.modulate = Color(1, 1, 1, alpha)
-		dot.visible = true
+	while remaining_length > 0 and dot_index < dots.size() and max_bounces >= 0:
+		var ray_end = current_pos + current_dir * remaining_length
+		var query = PhysicsRayQueryParameters2D.create(current_pos, ray_end)
+		query.exclude = [get_rid()]
+		var result = space_state.intersect_ray(query)
+
+		var segment_length = remaining_length
+
+		if result:
+			segment_length = current_pos.distance_to(result.position)
+		
+		# Place dots along this segment
+		var segment_dot_count = int(segment_length / DOT_SPACING)
+		for i in range(segment_dot_count):
+			if dot_index >= dots.size():
+				break
+			var dot = dots[dot_index]
+			var t = float(i + 1) * DOT_SPACING
+			dot.global_position = current_pos + current_dir * t
+			var alpha = clamp(1.0 - (MAX_LENGTH - remaining_length + t) / MAX_LENGTH, 0.0, 1.0)
+			dot.modulate = Color(1, 1, 1, alpha)
+			dot.visible = true
+			dot_index += 1
+
+		if result:
+			# Reflect the direction
+			current_dir = current_dir.bounce(result.normal)
+			current_pos = result.position + current_dir * 0.1  # Small offset to prevent sticking
+			remaining_length -= segment_length
+			max_bounces -= 1
+		else:
+			# No collision, finish
+			break
+
+	# Hide any remaining dots
+	for i in range(dot_index, dots.size()):
+		dots[i].visible = false
 
 # ===== Tongue Projectile System =====
 
