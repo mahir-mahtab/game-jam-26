@@ -65,6 +65,7 @@ var stuck_offset := Vector2.ZERO
 # Tongue state data
 var tongue_direction := Vector2.ZERO
 var tongue_current_length := 0.0
+
 var caught_prey: CharacterBody2D = null
 
 # ===== Lifecycle =====
@@ -264,8 +265,6 @@ func _change_state(new_state: State) -> void:
 func _launch_projectile() -> void:
 	_unstick()
 	var dir = (get_global_mouse_position() - global_position).normalized()
-	if dir == Vector2.ZERO:
-		dir = Vector2.RIGHT
 	velocity = dir * PROJECTILE_SPEED
 	bounce_count = 0
 	_change_state(State.PROJECTILE)
