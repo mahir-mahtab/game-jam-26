@@ -1,0 +1,64 @@
+[gd_scene load_steps=10 format=3 uid="uid://bep8xu7ik74xm"]
+
+[ext_resource type="Script" uid="uid://ctiyv42blxwff" path="res://src/entities/deadbody/deadbody.gd" id="1_posf1"]
+[ext_resource type="Texture2D" uid="uid://crq2fjsn8uk8g" path="res://assets/Units/Character/dead.png" id="2_xf2yh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g2rib"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(0, 459, 1275, 780)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7dfvr"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(1275, 459, 1275, 780)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xkewq"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(0, 1239, 1275, 780)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jwgrc"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(1275, 1239, 1275, 780)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ya6n"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(0, 2019, 1275, 780)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kevi8"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(1275, 2019, 1275, 780)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xf2yh"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g2rib")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7dfvr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xkewq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jwgrc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ya6n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kevi8")
+}],
+"loop": true,
+"name": &"die",
+"speed": 6.0
+}]
+
+[node name="Deadbody" type="Node2D"]
+script = ExtResource("1_posf1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(26.999998, -48.000004)
+scale = Vector2(0.12179482, 0.12179488)
+sprite_frames = SubResource("SpriteFrames_xf2yh")
+animation = &"die"
+frame_progress = 0.97516483

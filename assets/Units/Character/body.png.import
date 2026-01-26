@@ -2,8 +2,13 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< Updated upstream:assets/Units/Character/body.png.import
 uid="uid://1eppksuklcam"
 path="res://.godot/imported/body.png-c3efbed11f808eabdcb089f3315bc14e.ctex"
+=======
+uid="uid://crq2fjsn8uk8g"
+path="res://.godot/imported/dead.png-2614a4bdf54ebb143973e72c1929e1fb.ctex"
+>>>>>>> Stashed changes:assets/Units/Character/dead.png.import
 metadata={
 "vram_texture": false
 }
