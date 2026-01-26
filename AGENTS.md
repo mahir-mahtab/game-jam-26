@@ -188,7 +188,7 @@ assets/               # Art and resource files
 ### Scene Hierarchy
 - `game.tscn` instantiates player and prey instances
 - New entities should be separate `.tscn` files instanced in world scene
-- HUD references `res://src/ui/hud.gd` (currently missing - create if needed)
+- HUD script lives at `res://src/ui/hud.gd` and is attached to the HUD scene
 
 ## Important Notes for Agents
 

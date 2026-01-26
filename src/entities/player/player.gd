@@ -1,270 +1,355 @@
 extends CharacterBody2D
 
-# --- PHYSICS CONFIGURATION ---
-const PROJECTILE_SPEED = 1000.0
-const PROJECTILE_DECELERATION = 400.0
-const BOUNCE_DAMPING = 0.5
+## Player State Machine
+## States: IDLE, MOVING, PROJECTILE, STUCK, TONGUE_EXTEND, TONGUE_RETRACT
+## 
+## Transitions:
+##   IDLE/MOVING -> PROJECTILE (left-click while STUCK)
+##   IDLE/MOVING -> TONGUE_EXTEND (right-click, not stuck)
+##   PROJECTILE -> STUCK (hit prey)
+##   PROJECTILE -> IDLE (stopped)
+##   PROJECTILE -> TONGUE_EXTEND (right-click cancels projectile)
+##   TONGUE_EXTEND -> TONGUE_RETRACT (hit something or max length)
+##   TONGUE_RETRACT -> STUCK (caught prey fully retracted)
+##   TONGUE_RETRACT -> IDLE (no prey caught)
+##   STUCK -> PROJECTILE (left-click launches)
 
-# --- TONGUE CONFIGURATION ---
-const TONGUE_SPEED = 1500.0
-const TONGUE_MAX_LENGTH = 800.0
-const TONGUE_RETRACT_SPEED = 2000.0
-const PREY_PULL_SPEED = 900.0
-const TONGUE_WIDTH = 4.0
-
-# --- TRAJECTORY DOT CONFIGURATION ---
+# ===== Constants =====
+const SPEED = 300.0
 const DOT_SPACING = 21.0
 const MAX_LENGTH = 1000.0
 const DOT_SCALE = 0.02
+const PROJECTILE_SPEED = 800.0
+const PROJECTILE_DECELERATION = 50.0
+const BOUNCE_DAMPING = 0.8
+const MAX_BOUNCE_FOR_PLAYER = 2
 
-# --- STATE VARIABLES ---
-var current_host: Node2D = null # The prey we are currently stuck to
+const MAX_HEALTH = 100.0
+const HEALTH_DECAY_PER_SEC = 10.0
+
+const TONGUE_SPEED = 5000.0
+const TONGUE_MAX_LENGTH = 1000.0
+const TONGUE_RETRACT_SPEED = 2000.0
+const PREY_PULL_SPEED = 500.0
+const TONGUE_WIDTH = 3.0
+
+# ===== State Enum =====
+enum State {
+	IDLE,
+	MOVING,
+	PROJECTILE,
+	STUCK,
+	TONGUE_EXTEND,
+	TONGUE_RETRACT
+}
+
+# ===== Node References =====
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var dots_container: Node2D = $TrajectoryDots
+@onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
+@onready var camera : Camera2D=$Camera2D
+
+# ===== State Variables =====
+var current_state: State = State.IDLE
 var tongue_line: Line2D = null
-var tongue_active := false
-var tongue_state := "IDLE" 
+var dots: Array[Sprite2D] = []
+
+var health := MAX_HEALTH
+
+var bounce_count := 0
+
+# Stuck state data
+var stuck_to: Node2D = null
+var stuck_offset := Vector2.ZERO
+
+# Tongue state data
 var tongue_direction := Vector2.ZERO
 var tongue_current_length := 0.0
 
 var caught_prey: CharacterBody2D = null
-var projectile_active := false 
 
-# Trajectory variables
-var dots: Array[Sprite2D] = []
-
-# --- REFERENCES ---
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var dots_container: Node2D = $TrajectoryDots
-@onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
+# ===== Lifecycle =====
 
 func _ready() -> void:
-	# 1. Setup Tongue Visuals
-	setup_tongue_visual()
-	
-	# 2. Setup Trajectory Dots (From your original script)
-	if dot_template:
-		dot_template.visible = false
-		var max_dots := int(MAX_LENGTH / DOT_SPACING)
-		for i in range(max_dots):
-			var dot := dot_template.duplicate() as Sprite2D
-			dot.visible = true
-			dot.scale = Vector2.ONE * DOT_SCALE / (1 + i/10.0)
-			dots_container.add_child(dot)
-			dots.append(dot)
-	
-	# Hide dots initially
-	dots_container.visible = false
+	_setup_trajectory_dots()
+	_setup_tongue_visual()
 
 func _physics_process(delta: float) -> void:
-	# 1. ZOMBIE MODE (Attached to Host)
-	if current_host != null:
-		# Snap our position to the host
-		global_position = current_host.global_position
-		velocity = Vector2.ZERO
-		
-		# Show aiming dots because we are ready to launch
-		dots_container.visible = true
-		update_trajectory_dots()
-		return
+	match current_state:
+		State.IDLE:
+			_process_idle(delta)
+		State.MOVING:
+			_process_moving(delta)
+		State.PROJECTILE:
+			_process_projectile(delta)
+		State.STUCK:
+			_process_stuck(delta)
+		State.TONGUE_EXTEND:
+			_process_tongue_extend(delta)
+		State.TONGUE_RETRACT:
+			_process_tongue_retract(delta)
 
-	# 2. HANDLE TONGUE
-	if tongue_active:
-		process_tongue_physics(delta)
-		if caught_prey:
-			pull_prey(delta)
-		return 
-
-	# 3. HANDLE PROJECTILE MOVEMENT
-	if projectile_active:
-		var collision = move_and_collide(velocity * delta)
-		
-		var speed = velocity.length()
-		speed = move_toward(speed, 0, PROJECTILE_DECELERATION * delta)
-		velocity = velocity.normalized() * speed
-
-		if speed < 10.0:
-			stop_movement()
-
-		if collision:
-			velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
-	
-	# Hide dots if we are flying or empty
-	if current_host == null:
-		dots_container.visible = false
+func _process(_delta: float) -> void:
+	_update_health(_delta)
+	_update_trajectory_dots()
 
 func _input(event: InputEvent) -> void:
-	# LEFT CLICK: Launch (Only if we have a Host)
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if current_host != null:
-			launch_from_host()
-		elif not projectile_active and not tongue_active:
-			print("Need a host to launch!")
-
-	# RIGHT CLICK: Tongue (Only if NOT attached to host)
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		if current_host == null and not tongue_active and not projectile_active:
-			start_tongue()
-
-# --- ACTIONS ---
-
-func launch_from_host() -> void:
-	# THE EXCHANGE: Destroy the host to gain speed
-	if current_host:
-		current_host.queue_free()
-		current_host = null
+	if not event is InputEventMouseButton or not event.pressed:
+		return
 	
+	match event.button_index:
+		MOUSE_BUTTON_LEFT:
+			_handle_left_click()
+		MOUSE_BUTTON_RIGHT:
+			_handle_right_click()
+
+# ===== Input Handlers =====
+
+func _handle_left_click() -> void:
+	# Projectile launch only when STUCK
+	if current_state == State.STUCK:
+		_launch_projectile()
+
+func _handle_right_click() -> void:
+	# Tongue allowed when not STUCK and not already using tongue
+	if current_state in [State.IDLE, State.MOVING, State.PROJECTILE]:
+		_launch_tongue()
+
+# ===== State Processors =====
+
+func _process_idle(delta: float) -> void:
+	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if direction != Vector2.ZERO:
+		_change_state(State.MOVING)
+		_process_moving(delta)
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, SPEED)
+		animated_sprite.play("idle")
+		move_and_slide()
+
+func _process_moving(_delta: float) -> void:
+	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if direction == Vector2.ZERO:
+		_change_state(State.IDLE)
+		return
+	
+	velocity = direction * SPEED
+	if direction.x != 0:
+		animated_sprite.flip_h = (direction.x < 0)
+	animated_sprite.play("run")
+	move_and_slide()
+
+func _process_projectile(delta: float) -> void:
+	var current_speed = velocity.length()
+	# Stop if too slow
+	if current_speed < 10.0:
+		velocity = Vector2.ZERO
+		bounce_count = 0
+		_change_state(State.IDLE)
+		return
+	
+	# Apply deceleration
+	var new_speed = max(current_speed - PROJECTILE_DECELERATION * delta, 0.0)
+	velocity = velocity.normalized() * new_speed
+	
+	# Check collisions
+	var collision = move_and_collide(velocity * delta)
+	if collision:
+		var collider = collision.get_collider()
+		if collider != null:
+			if collider.is_in_group("prey"):
+				_stick_to_prey(collider)
+			elif collider.is_in_group("breakingwall"):
+				if collider.has_method("break_wall"):
+					collider.break_wall()
+				velocity = velocity * .6
+				
+			else:
+				velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
+				bounce_count += 1
+				if bounce_count >= MAX_BOUNCE_FOR_PLAYER:
+					velocity *= 0.1
+
+func _process_stuck(_delta: float) -> void:
+	velocity = Vector2.ZERO
+	if stuck_to != null and is_instance_valid(stuck_to):
+		global_position = stuck_to.global_position + stuck_offset
+	else:
+		# Prey was destroyed, return to idle
+		_unstick()
+		_change_state(State.IDLE)
+
+func _process_tongue_extend(delta: float) -> void:
+	if tongue_line == null:
+		_change_state(State.IDLE)
+		return
+	
+	tongue_current_length += TONGUE_SPEED * delta
+	var tongue_tip_pos = tongue_direction * tongue_current_length
+	
+	# Raycast for collision
+	var space_state = get_world_2d().direct_space_state
+	var ray_end = global_position + tongue_tip_pos
+	var query = PhysicsRayQueryParameters2D.create(global_position, ray_end)
+	query.exclude = [get_rid()]
+	var result = space_state.intersect_ray(query)
+	
+	if result:
+		tongue_current_length = global_position.distance_to(result.position)
+		var hit_tip_pos = tongue_direction * tongue_current_length
+		_update_tongue_visual(hit_tip_pos)
+		
+		var collider = result.collider
+		if collider != null and collider.is_in_group("prey") and collider is CharacterBody2D:
+			_catch_prey(collider as CharacterBody2D)
+		else:
+			_change_state(State.TONGUE_RETRACT)
+		return
+	
+	# Max length reached
+	if tongue_current_length >= TONGUE_MAX_LENGTH:
+		_change_state(State.TONGUE_RETRACT)
+	
+	_update_tongue_visual(tongue_tip_pos)
+
+func _process_tongue_retract(delta: float) -> void:
+	tongue_current_length -= TONGUE_RETRACT_SPEED * delta
+	
+	# Pull caught prey along
+	if caught_prey != null and is_instance_valid(caught_prey):
+		var tongue_tip_global = global_position + (tongue_direction * tongue_current_length)
+		var move_distance = PREY_PULL_SPEED * delta
+		caught_prey.global_position = caught_prey.global_position.move_toward(tongue_tip_global, move_distance)
+	
+	var tongue_tip_pos = tongue_direction * max(tongue_current_length, 0.0)
+	_update_tongue_visual(tongue_tip_pos)
+	
+	# Fully retracted
+	if tongue_current_length <= 0.0:
+		_finish_tongue()
+
+# ===== State Transitions =====
+
+func _change_state(new_state: State) -> void:
+	var old_state = current_state
+	
+	# Exit old state
+	match old_state:
+		State.PROJECTILE:
+			if new_state != State.PROJECTILE:
+				bounce_count = 0
+		State.STUCK:
+			pass  # Cleanup handled by _unstick()
+		State.TONGUE_EXTEND, State.TONGUE_RETRACT:
+			pass  # Cleanup handled by _finish_tongue()
+	
+	current_state = new_state
+	
+	# Enter new state
+	match new_state:
+		State.IDLE:
+			animated_sprite.play("idle")
+		State.MOVING:
+			animated_sprite.play("run")
+		State.PROJECTILE:
+			pass
+		State.STUCK:
+			velocity = Vector2.ZERO
+		State.TONGUE_EXTEND:
+			pass
+		State.TONGUE_RETRACT:
+			pass
+
+# ===== Actions =====
+
+func _launch_projectile() -> void:
+	_unstick()
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	velocity = dir * PROJECTILE_SPEED
-	projectile_active = true
-	
-	animated_sprite.play("run")
+	bounce_count = 0
+	_change_state(State.PROJECTILE)
 
-func stop_movement() -> void:
-	projectile_active = false
-	velocity = Vector2.ZERO
-	animated_sprite.play("idle")
-
-func attach_to_host(prey: Node2D) -> void:
-	print("Attached to prey!")
+func _launch_tongue() -> void:
+	# Cancel projectile if active
+	if current_state == State.PROJECTILE:
+		velocity = Vector2.ZERO
 	
-	reset_tongue()
-	current_host = prey
+	var dir = (get_global_mouse_position() - global_position).normalized()
+	if dir == Vector2.ZERO:
+		dir = Vector2.RIGHT
 	
-	# Note: We keeps the collision exception active so we don't 
-	# "explode" away from the host due to physics overlap.
-	
-	if current_host.has_method("set_zombified"):
-		current_host.set_zombified(true)
-		
-	global_position = current_host.global_position
-# --- TONGUE MECHANICS ---
-
-func start_tongue() -> void:
-	tongue_active = true
-	tongue_state = "EXTENDING"
-	tongue_direction = (get_global_mouse_position() - global_position).normalized()
+	tongue_direction = dir
 	tongue_current_length = 0.0
-	tongue_line.visible = true
-
-func process_tongue_physics(delta: float) -> void:
-	var start_pos = global_position
-	
-	# CASE 1: We have a target. Let pull_prey() handle everything.
-	if caught_prey != null:
-		if is_instance_valid(caught_prey):
-			tongue_current_length = start_pos.distance_to(caught_prey.global_position)
-			update_tongue_line()
-		else:
-			reset_tongue()
-		return 
-
-	# CASE 2: No target yet (Extending or Retracting empty)
-	if tongue_state == "EXTENDING":
-		tongue_current_length += TONGUE_SPEED * delta
-		var tip_pos = start_pos + (tongue_direction * tongue_current_length)
-		
-		var query = PhysicsRayQueryParameters2D.create(start_pos, tip_pos)
-		query.exclude = [get_rid()] 
-		
-		# --- CHANGE 1: Enable hitting Area2D (The Shield) ---
-		query.collide_with_areas = true 
-		# ---------------------------------------------------
-
-		var result = get_world_2d().direct_space_state.intersect_ray(query)
-		
-		if result:
-			tongue_current_length = start_pos.distance_to(result.position)
-			var collider = result.collider
-			
-			# --- CHANGE 2: Check for Shield BEFORE checking for Prey ---
-			if collider.is_in_group("shield"):
-				print("Clang! Tongue hit a shield.")
-				tongue_state = "RETRACTING"
-				# Optional: Add a spark particle effect here
-			
-			elif collider.is_in_group("prey"):
-				start_pulling_prey(collider)
-			else:
-				# Hit a wall
-				tongue_state = "RETRACTING"
-			# -----------------------------------------------------------
-		
-		elif tongue_current_length >= TONGUE_MAX_LENGTH:
-			tongue_state = "RETRACTING"
-
-	elif tongue_state == "RETRACTING":
-		tongue_current_length -= TONGUE_RETRACT_SPEED * delta
-		if tongue_current_length <= 0:
-			reset_tongue()
-
-	update_tongue_line()
-
-	update_tongue_line()
-func start_pulling_prey(prey: Node2D) -> void:
-	caught_prey = prey
-	tongue_state = "RETRACTING"
-	
-	# NEW: Allow the prey to overlap with the player so we can catch it
-	add_collision_exception_with(prey)
-	
-	if prey.has_method("set_pulled_state"):
-		prey.set_pulled_state(true)
-
-func pull_prey(delta: float) -> void:
-	if not is_instance_valid(caught_prey): 
-		reset_tongue()
-		return
-		
-	# PHYSICS PULL
-	var direction = (global_position - caught_prey.global_position).normalized()
-	var dist = global_position.distance_to(caught_prey.global_position)
-
-	# If closer than 50px, ATTACH!
-	if dist < 50.0:
-		attach_to_host(caught_prey)
-		return
-
-	var speed = PREY_PULL_SPEED
-	# Smooth down speed as they get close
-	if dist < 50.0:
-		speed = 400.0
-	
-	# Apply velocity to prey
-	caught_prey.velocity = direction * speed
-	
-	# Update visual line
-	var local_prey_pos = to_local(caught_prey.global_position)
-	tongue_line.set_point_position(1, local_prey_pos)
-func reset_tongue() -> void:
-	tongue_active = false
-	tongue_state = "IDLE"
-	tongue_line.visible = false
-	
-	# SAFETY: If we drop a prey, tell it to stop being pulled
-	if caught_prey != null and is_instance_valid(caught_prey):
-		if caught_prey.has_method("set_pulled_state"):
-			caught_prey.set_pulled_state(false)
-			# Also stop its sliding velocity so it doesn't drift away
-			caught_prey.velocity = Vector2.ZERO
-			
 	caught_prey = null
-
-func setup_tongue_visual() -> void:
-	tongue_line = get_node_or_null("Tongue")
-	if not tongue_line:
-		tongue_line = Line2D.new()
-		tongue_line.name = "Tongue"
-		tongue_line.width = TONGUE_WIDTH
-		tongue_line.default_color = Color(1.0, 0.4, 0.5)
-		add_child(tongue_line)
-
-func update_tongue_line() -> void:
-	if tongue_line.visible:
+	
+	if tongue_line:
+		tongue_line.position = Vector2.ZERO
+		tongue_line.visible = true
 		tongue_line.clear_points()
 		tongue_line.add_point(Vector2.ZERO)
-		tongue_line.add_point(tongue_direction * tongue_current_length)
+		tongue_line.add_point(Vector2.ZERO)
+	
+	_change_state(State.TONGUE_EXTEND)
 
-# --- TRAJECTORY VISUALIZATION (Restored) ---
-func update_trajectory_dots() -> void:
+func _stick_to_prey(prey_node: Node2D) -> void:
+	stuck_to = prey_node
+	stuck_offset = global_position - prey_node.global_position
+	velocity = Vector2.ZERO
+	
+	var prey_shape = prey_node.get_node_or_null("CollisionShape2D")
+	if prey_shape:
+		prey_shape.set_deferred("disabled", true)
+	else:
+		print("Warning: No CollisionShape2D found on prey!")
+	
+	_change_state(State.STUCK)
+
+func _unstick() -> void:
+	stuck_to = null
+	stuck_offset = Vector2.ZERO
+
+func _catch_prey(prey_node: CharacterBody2D) -> void:
+	caught_prey = prey_node
+	if camera: camera.trigger_shake()
+	prints(camera)
+	var prey_shape = prey_node.get_node_or_null("CollisionShape2D")
+	if prey_shape:
+		prey_shape.set_deferred("disabled", true)
+	
+	if prey_node.has_method("set_pulled_state"):
+		prey_node.set_pulled_state(true)
+	
+	_change_state(State.TONGUE_RETRACT)
+
+func _finish_tongue() -> void:
+	# Hide tongue
+	if tongue_line:
+		tongue_line.visible = false
+		tongue_line.clear_points()
+	
+	# Handle caught prey
+	if caught_prey != null and is_instance_valid(caught_prey):
+		var prey = caught_prey
+		caught_prey = null
+		
+		if prey.has_method("set_pulled_state"):
+			prey.set_pulled_state(false)
+		
+		prey.global_position = global_position
+		_stick_to_prey(prey)
+	else:
+		caught_prey = null
+		_change_state(State.IDLE)
+
+# ===== Visual Updates =====
+
+func _update_trajectory_dots() -> void:
+	# Only show when STUCK
+	if current_state != State.STUCK:
+		for dot in dots:
+			dot.visible = false
+		return
+	
 	var start_pos = global_position
 	var mouse_pos = get_global_mouse_position()
 	var direction = (mouse_pos - start_pos).normalized()
@@ -277,7 +362,7 @@ func update_trajectory_dots() -> void:
 	var current_dir = direction
 
 	var dot_index = 0
-	var max_bounces = 3 
+	var max_bounces = 1
 
 	while remaining_length > 0 and dot_index < dots.size() and max_bounces >= 0:
 		var ray_end = current_pos + current_dir * remaining_length
@@ -286,11 +371,9 @@ func update_trajectory_dots() -> void:
 		var result = space_state.intersect_ray(query)
 
 		var segment_length = remaining_length
-
 		if result:
 			segment_length = current_pos.distance_to(result.position)
 		
-		# Place dots along this segment
 		var segment_dot_count = int(segment_length / DOT_SPACING)
 		for i in range(segment_dot_count):
 			if dot_index >= dots.size():
@@ -304,14 +387,69 @@ func update_trajectory_dots() -> void:
 			dot_index += 1
 
 		if result:
-			# Reflect the direction
 			current_dir = current_dir.bounce(result.normal)
-			current_pos = result.position + current_dir * 0.1 
+			current_pos = result.position + current_dir * 0.1
 			remaining_length -= segment_length
 			max_bounces -= 1
 		else:
 			break
 
-	# Hide any remaining dots
 	for i in range(dot_index, dots.size()):
 		dots[i].visible = false
+
+func _update_tongue_visual(tongue_tip_local: Vector2) -> void:
+	if not tongue_line:
+		return
+	tongue_line.clear_points()
+	tongue_line.add_point(Vector2.ZERO)
+	tongue_line.add_point(tongue_tip_local)
+
+func _update_health(delta: float) -> void:
+	if current_state == State.STUCK || current_state==State.PROJECTILE:
+		return
+	health = max(health - HEALTH_DECAY_PER_SEC * delta, 0.0)
+
+# ===== Setup =====
+
+func _setup_trajectory_dots() -> void:
+	dot_template.visible = false
+	var max_dots := int(MAX_LENGTH / DOT_SPACING)
+	for i in range(max_dots):
+		var dot := dot_template.duplicate() as Sprite2D
+		dot.visible = true
+		dot.scale = Vector2.ONE * DOT_SCALE * 1.0 / (1 + (i * 1.0) / 10)
+		dots_container.add_child(dot)
+		dots.append(dot)
+
+func _setup_tongue_visual() -> void:
+	tongue_line = get_node_or_null("Tongue")
+	if tongue_line == null:
+		tongue_line = Line2D.new()
+		tongue_line.name = "Tongue"
+		tongue_line.width = TONGUE_WIDTH
+		tongue_line.default_color = Color(1.0, 0.4, 0.5, 1.0)
+		tongue_line.begin_cap_mode = Line2D.LINE_CAP_ROUND
+		tongue_line.end_cap_mode = Line2D.LINE_CAP_ROUND
+		tongue_line.visible = false
+		tongue_line.z_index = -1
+		add_child(tongue_line)
+
+# ===== Public API (for HUD/external access) =====
+
+func get_state() -> State:
+	return current_state
+
+func is_stuck() -> bool:
+	return current_state == State.STUCK
+
+func is_projectile_active() -> bool:
+	return current_state == State.PROJECTILE
+
+func is_tongue_active() -> bool:
+	return current_state in [State.TONGUE_EXTEND, State.TONGUE_RETRACT]
+
+func get_health() -> float:
+	return health
+
+func get_max_health() -> float:
+	return MAX_HEALTH

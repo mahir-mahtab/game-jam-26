@@ -22,7 +22,7 @@
 - The runtime main scene is configured in [project.godot](project.godot) (`run/main_scene`).
 
 ## UI/HUD
-- HUD scene is [src/ui/gam/hud.tscn](src/ui/gam/hud.tscn); it references a script at `res://src/ui/hud.gd` which is currently missing. If you add HUD logic, create this script and attach it.
+- HUD scene is [src/ui/gam/hud.tscn](src/ui/gam/hud.tscn) and uses the script at `res://src/ui/hud.gd`.
 
 ## Assets
 - Art assets are under [assets](assets) and referenced directly in `.tscn` scenes. Prefer updating scenes in the Godot editor to avoid breaking resource UIDs.
