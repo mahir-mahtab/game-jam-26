@@ -50,8 +50,8 @@ src/
 │   └── prey/         # Prey entities (prey.tscn, prey.gd)
 ├── events/           # Game events (currently empty)
 └── ui/               # User interface
-    ├── gam/          # Game scenes (game.tscn, hud.tscn)
-    └── main_menu.*   # Menu controller
+	├── gam/          # Game scenes (game.tscn, hud.tscn)
+	└── main_menu.*   # Menu controller
 
 assets/               # Art and resource files
 ├── Buildings/        # Faction buildings
@@ -89,7 +89,7 @@ assets/               # Art and resource files
   var dots: Array[Sprite2D] = []
   var projectile_active := false  # Type inferred from value
   var stuck_offset := Vector2.ZERO
-  ```
+  ```	 
 - **@onready declarations** with type hints:
   ```gdscript
   @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -131,16 +131,16 @@ assets/               # Art and resource files
   ```gdscript
   var prey_shape = prey_node.get_node_or_null("CollisionShape2D")
   if prey_shape:
-      prey_shape.set_deferred("disabled", true)
+	  prey_shape.set_deferred("disabled", true)
   else:
-      print("Warning: No CollisionShape2D found on prey!")
+	  print("Warning: No CollisionShape2D found on prey!")
   ```
 - **Resource validation**:
   ```gdscript
   if ResourceLoader.exists(GAME_SCENE_PATH):
-      get_tree().change_scene_to_file(GAME_SCENE_PATH)
+	  get_tree().change_scene_to_file(GAME_SCENE_PATH)
   else:
-      print("Game scene not found at: ", GAME_SCENE_PATH)
+	  print("Game scene not found at: ", GAME_SCENE_PATH)
   ```
 - **Deferred operations**: Use `set_deferred()` for physics/collision changes
 - **Print statements**: Use for warnings and debugging, not production logging

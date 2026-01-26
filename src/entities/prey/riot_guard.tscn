@@ -1,54 +1,54 @@
-[gd_scene load_steps=17 format=3 uid="uid://bo0u0g8i0eh04"]
+[gd_scene load_steps=18 format=3 uid="uid://cu84teg8odtc4"]
 
-[ext_resource type="Script" uid="uid://delcje0g7h876" path="res://src/entities/prey/prey.gd" id="1_uuspj"]
-[ext_resource type="Texture2D" uid="uid://dhad73xknwdyp" path="res://assets/Units/Black Units/Lancer/Lancer_Idle.png" id="2_uahvo"]
+[ext_resource type="Script" uid="uid://c0njgitpkesdu" path="res://src/entities/prey/riot_guard.gd" id="1_fai5x"]
+[ext_resource type="Texture2D" uid="uid://dhad73xknwdyp" path="res://assets/Units/Black Units/Lancer/Lancer_Idle.png" id="2_f5v6x"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_y5wba"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(0, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ftthi"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(320, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ruonm"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(640, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_87opm"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(960, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f08xt"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(1280, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_u5et7"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(1600, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fn6bl"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(1920, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gc7p4"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(2240, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0q082"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(2560, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3s5xn"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(2880, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0pa8y"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(3200, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1mxlp"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("2_f5v6x")
 region = Rect2(3520, 0, 320, 320)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_8pnmx"]
@@ -99,8 +99,11 @@ animations = [{
 radius = 19.0
 height = 70.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fai5x"]
+size = Vector2(24, 52)
+
 [node name="Prey" type="CharacterBody2D"]
-script = ExtResource("1_uuspj")
+script = ExtResource("1_fai5x")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-2, -34)
@@ -118,3 +121,9 @@ target_position = Vector2(20, 0)
 [node name="FloorCheck" type="RayCast2D" parent="."]
 position = Vector2(20, 0)
 target_position = Vector2(0, 20)
+
+[node name="Shield" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shield" groups=["Shield"]]
+position = Vector2(9, -29)
+shape = SubResource("RectangleShape2D_fai5x")

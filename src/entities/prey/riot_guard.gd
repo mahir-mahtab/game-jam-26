@@ -46,6 +46,12 @@ func _physics_process(delta: float) -> void:
 	
 	# Visuals
 	animated_sprite.flip_h = (direction < 0)
+	# FLIP SHIELD with Body
+	# Assuming the Shield is a child of the root node
+	if direction > 0:
+		$Shield.position.x = 20 # Front Right
+	else:
+		$Shield.position.x = -20 # Front Left
 
 	move_and_slide()
 
