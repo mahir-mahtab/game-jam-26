@@ -23,27 +23,27 @@ var player_ref: Node2D = null
 
 func _ready() -> void:
 	add_to_group("prey")
-	
-	# CRITICAL: This prevents falling!
 	motion_mode = MOTION_MODE_FLOATING 
 	
 	player_ref = get_tree().get_first_node_in_group("player")
-	aim_timer.timeout.connect(_on_shoot)
+	if not player_ref:
+		print("[ERROR] Sniper cannot find any node in group 'player'!")
 	
+	aim_timer.timeout.connect(_on_shoot)
 	if randf() > 0.5: direction = Vector2.LEFT
 
 func _physics_process(_delta: float) -> void:
-	# 1. STOP if captured
 	if is_zombified:
+		_cancel_aim()
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
 
 	if being_pulled:
+		_cancel_aim()
 		move_and_slide()
 		return
 
-	# 2. STATE LOGIC
 	match current_state:
 		PATROL:
 			_process_patrol()
@@ -51,45 +51,63 @@ func _physics_process(_delta: float) -> void:
 		AIM:
 			_process_aim()
 
-	# 3. APPLY MOVEMENT
 	move_and_slide()
 
 func _process_patrol() -> void:
-	# Wall Bounce Logic
 	wall_check.target_position = direction * 35.0
 	if wall_check.is_colliding() or is_on_wall():
 		direction *= -1
 		wall_check.force_raycast_update()
 	
 	velocity = direction * patrol_speed
-	
-	# Visuals
 	animated_sprite.flip_h = (direction.x < 0)
 	laser_line.visible = false
 
 func _check_for_player() -> void:
 	if not player_ref: return
 	
-	# A. Distance
+	# DEBUG 1: Distance
 	var dist = global_position.distance_to(player_ref.global_position)
-	if dist > sight_range: return
+	if dist > sight_range: 
+		# Uncomment if you suspect range issues
+		# print("[DEBUG] Player too far: ", dist)
+		return
 	
-	# B. Facing Direction (90 degree cone)
+	# DEBUG 2: Direction
 	var to_player = (player_ref.global_position - global_position).normalized()
-	if direction.dot(to_player) < 0: return 
+	if direction.dot(to_player) < 0: 
+		# print("[DEBUG] Player is behind me")
+		return 
 	
-	# C. Raycast (Vision)
+	# DEBUG 3: Raycast Vision
 	var space = get_world_2d().direct_space_state
-	var query = PhysicsRayQueryParameters2D.create(global_position, player_ref.global_position)
-	query.exclude = [get_rid()] 
+	
+	# Start ray 30px forward to clear own hitbox
+	var start_pos = global_position + (direction * 30.0)
+	
+	var query = PhysicsRayQueryParameters2D.create(start_pos, player_ref.global_position)
+	
+	# EXCLUDE SELF AND CHILDREN (Important!)
+	var exceptions = [get_rid()]
+	for child in get_children():
+		if child is CollisionObject2D: # Exclude any child Areas/Bodies
+			exceptions.append(child.get_rid())
+	query.exclude = exceptions
 	
 	var result = space.intersect_ray(query)
-	if result and result.collider == player_ref:
-		_start_aiming()
+	
+	if result:
+		if result.collider == player_ref:
+			_start_aiming()
+		else:
+			# CRITICAL DEBUG: This tells us what is blocking the view
+			print("[DEBUG] Vision Blocked by: ", result.collider.name)
 
 func _start_aiming() -> void:
+	if current_state == AIM: return
+	print("Sniper spotted player! Starting Aim.")
 	current_state = AIM
-	velocity = Vector2.ZERO # Stop moving to shoot
+	velocity = Vector2.ZERO 
 	laser_line.visible = true
 	aim_timer.start()
 
@@ -97,7 +115,6 @@ func _process_aim() -> void:
 	if not player_ref:
 		_cancel_aim()
 		return
-	# Update laser visual
 	laser_line.clear_points()
 	laser_line.add_point(Vector2.ZERO)
 	laser_line.add_point(to_local(player_ref.global_position))
@@ -105,21 +122,30 @@ func _process_aim() -> void:
 func _on_shoot() -> void:
 	if current_state != AIM: return
 	
-	# Final line of sight check
 	var space = get_world_2d().direct_space_state
-	var query = PhysicsRayQueryParameters2D.create(global_position, player_ref.global_position)
+	var start_pos = global_position + (direction * 30.0)
+	var query = PhysicsRayQueryParameters2D.create(start_pos, player_ref.global_position)
 	query.exclude = [get_rid()]
+	
 	var result = space.intersect_ray(query)
 	
 	if result and result.collider == player_ref:
-		print("BANG! Player hit.")
-		get_tree().reload_current_scene()
+		print("BANG! Sniper hit player.")
+		if player_ref.has_method("take_damage"):
+			player_ref.take_damage(40.0)
+			laser_line.default_color = Color.WHITE
+	else:
+		if result:
+			print("Sniper shot blocked by: ", result.collider.name)
+		else:
+			print("Sniper shot missed (No collision?)")
 	
 	_cancel_aim()
 
 func _cancel_aim() -> void:
 	current_state = PATROL
 	laser_line.visible = false
+	laser_line.default_color = Color(1, 0, 0)
 	aim_timer.stop()
 
 # Helper functions

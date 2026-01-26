@@ -1,37 +1,28 @@
 extends CharacterBody2D
 
 ## Player State Machine
-## States: IDLE, MOVING, PROJECTILE, STUCK, TONGUE_EXTEND, TONGUE_RETRACT
-## 
-## Transitions:
-##   IDLE/MOVING -> PROJECTILE (left-click while STUCK)
-##   IDLE/MOVING -> TONGUE_EXTEND (right-click, not stuck)
-##   PROJECTILE -> STUCK (hit prey)
-##   PROJECTILE -> IDLE (stopped)
-##   PROJECTILE -> TONGUE_EXTEND (right-click cancels projectile)
-##   TONGUE_EXTEND -> TONGUE_RETRACT (hit something or max length)
-##   TONGUE_RETRACT -> STUCK (caught prey fully retracted)
-##   TONGUE_RETRACT -> IDLE (no prey caught)
-##   STUCK -> PROJECTILE (left-click launches)
+## Features: FSM Architecture + Equivalent Exchange + Shield Support
 
 # ===== Constants =====
 const SPEED = 300.0
-const DOT_SPACING = 21.0
-const MAX_LENGTH = 1000.0
-const DOT_SCALE = 0.02
-const PROJECTILE_SPEED = 800.0
-const PROJECTILE_DECELERATION = 50.0
-const BOUNCE_DAMPING = 0.8
+const PROJECTILE_SPEED = 1000.0
+const PROJECTILE_DECELERATION = 400.0
+const BOUNCE_DAMPING = 0.5
 const MAX_BOUNCE_FOR_PLAYER = 2
 
 const MAX_HEALTH = 100.0
 const HEALTH_DECAY_PER_SEC = 10.0
 
-const TONGUE_SPEED = 5000.0
-const TONGUE_MAX_LENGTH = 1000.0
+const TONGUE_SPEED = 1500.0
+const TONGUE_MAX_LENGTH = 800.0
 const TONGUE_RETRACT_SPEED = 2000.0
-const PREY_PULL_SPEED = 500.0
-const TONGUE_WIDTH = 3.0
+const PREY_PULL_SPEED = 900.0
+const TONGUE_WIDTH = 4.0
+
+# ===== Visuals =====
+const DOT_SPACING = 21.0
+const MAX_LENGTH = 1000.0
+const DOT_SCALE = 0.02
 
 # ===== State Enum =====
 enum State {
@@ -47,7 +38,7 @@ enum State {
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var dots_container: Node2D = $TrajectoryDots
 @onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
-@onready var camera : Camera2D=$Camera2D
+@onready var camera: Camera2D = $Camera2D
 
 # ===== State Variables =====
 var current_state: State = State.IDLE
@@ -55,7 +46,6 @@ var tongue_line: Line2D = null
 var dots: Array[Sprite2D] = []
 
 var health := MAX_HEALTH
-
 var bounce_count := 0
 
 # Stuck state data
@@ -65,7 +55,6 @@ var stuck_offset := Vector2.ZERO
 # Tongue state data
 var tongue_direction := Vector2.ZERO
 var tongue_current_length := 0.0
-
 var caught_prey: CharacterBody2D = null
 
 # ===== Lifecycle =====
@@ -73,6 +62,7 @@ var caught_prey: CharacterBody2D = null
 func _ready() -> void:
 	_setup_trajectory_dots()
 	_setup_tongue_visual()
+	add_to_group("player")
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -89,8 +79,8 @@ func _physics_process(delta: float) -> void:
 		State.TONGUE_RETRACT:
 			_process_tongue_retract(delta)
 
-func _process(_delta: float) -> void:
-	_update_health(_delta)
+func _process(delta: float) -> void:
+	_update_health(delta)
 	_update_trajectory_dots()
 
 func _input(event: InputEvent) -> void:
@@ -106,7 +96,7 @@ func _input(event: InputEvent) -> void:
 # ===== Input Handlers =====
 
 func _handle_left_click() -> void:
-	# Projectile launch only when STUCK
+	# Projectile launch only when STUCK (The "Exchange")
 	if current_state == State.STUCK:
 		_launch_projectile()
 
@@ -158,13 +148,14 @@ func _process_projectile(delta: float) -> void:
 		var collider = collision.get_collider()
 		if collider != null:
 			if collider.is_in_group("prey"):
+				# Direct impact catch
 				_stick_to_prey(collider)
 			elif collider.is_in_group("breakingwall"):
 				if collider.has_method("break_wall"):
 					collider.break_wall()
 				velocity = velocity * .6
-				
 			else:
+				# Wall bounce
 				velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
 				bounce_count += 1
 				if bounce_count >= MAX_BOUNCE_FOR_PLAYER:
@@ -175,7 +166,7 @@ func _process_stuck(_delta: float) -> void:
 	if stuck_to != null and is_instance_valid(stuck_to):
 		global_position = stuck_to.global_position + stuck_offset
 	else:
-		# Prey was destroyed, return to idle
+		# Prey was destroyed or lost, return to idle
 		_unstick()
 		_change_state(State.IDLE)
 
@@ -192,6 +183,10 @@ func _process_tongue_extend(delta: float) -> void:
 	var ray_end = global_position + tongue_tip_pos
 	var query = PhysicsRayQueryParameters2D.create(global_position, ray_end)
 	query.exclude = [get_rid()]
+	
+	# Enable Area collisions for Shields
+	query.collide_with_areas = true 
+	
 	var result = space_state.intersect_ray(query)
 	
 	if result:
@@ -200,9 +195,17 @@ func _process_tongue_extend(delta: float) -> void:
 		_update_tongue_visual(hit_tip_pos)
 		
 		var collider = result.collider
-		if collider != null and collider.is_in_group("prey") and collider is CharacterBody2D:
+		
+		# Check Shield Group First
+		if collider.is_in_group("shield"):
+			print("Clang! Hit a shield.")
+			_change_state(State.TONGUE_RETRACT)
+			return
+			
+		elif collider != null and collider.is_in_group("prey") and collider is CharacterBody2D:
 			_catch_prey(collider as CharacterBody2D)
 		else:
+			# Hit wall
 			_change_state(State.TONGUE_RETRACT)
 		return
 	
@@ -218,6 +221,8 @@ func _process_tongue_retract(delta: float) -> void:
 	# Pull caught prey along
 	if caught_prey != null and is_instance_valid(caught_prey):
 		var tongue_tip_global = global_position + (tongue_direction * tongue_current_length)
+		
+		# Move prey towards tongue tip
 		var move_distance = PREY_PULL_SPEED * delta
 		caught_prey.global_position = caught_prey.global_position.move_toward(tongue_tip_global, move_distance)
 	
@@ -252,7 +257,7 @@ func _change_state(new_state: State) -> void:
 		State.MOVING:
 			animated_sprite.play("run")
 		State.PROJECTILE:
-			pass
+			animated_sprite.play("run")
 		State.STUCK:
 			velocity = Vector2.ZERO
 		State.TONGUE_EXTEND:
@@ -263,7 +268,12 @@ func _change_state(new_state: State) -> void:
 # ===== Actions =====
 
 func _launch_projectile() -> void:
+	# CRITICAL FIX 1: CONSUME THE HOST
+	if stuck_to != null and is_instance_valid(stuck_to):
+		stuck_to.queue_free() # Destroy the prey
+		
 	_unstick()
+	
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	velocity = dir * PROJECTILE_SPEED
 	bounce_count = 0
@@ -301,6 +311,10 @@ func _stick_to_prey(prey_node: Node2D) -> void:
 		prey_shape.set_deferred("disabled", true)
 	else:
 		print("Warning: No CollisionShape2D found on prey!")
+		
+	# CRITICAL FIX 2: FREEZE THE PREY
+	if prey_node.has_method("set_zombified"):
+		prey_node.set_zombified(true)
 	
 	_change_state(State.STUCK)
 
@@ -311,10 +325,9 @@ func _unstick() -> void:
 func _catch_prey(prey_node: CharacterBody2D) -> void:
 	caught_prey = prey_node
 	if camera: camera.trigger_shake()
-	prints(camera)
-	var prey_shape = prey_node.get_node_or_null("CollisionShape2D")
-	if prey_shape:
-		prey_shape.set_deferred("disabled", true)
+	
+	# Add collision exception so prey can be pulled to center
+	add_collision_exception_with(prey_node)
 	
 	if prey_node.has_method("set_pulled_state"):
 		prey_node.set_pulled_state(true)
@@ -332,10 +345,14 @@ func _finish_tongue() -> void:
 		var prey = caught_prey
 		caught_prey = null
 		
+		# Reset pulled state
 		if prey.has_method("set_pulled_state"):
 			prey.set_pulled_state(false)
 		
+		# Snap to position
 		prey.global_position = global_position
+		
+		# Stick to it
 		_stick_to_prey(prey)
 	else:
 		caught_prey = null
@@ -362,7 +379,7 @@ func _update_trajectory_dots() -> void:
 	var current_dir = direction
 
 	var dot_index = 0
-	var max_bounces = 1
+	var max_bounces = 3 # Kept Enemy branch setting
 
 	while remaining_length > 0 and dot_index < dots.size() and max_bounces >= 0:
 		var ray_end = current_pos + current_dir * remaining_length
@@ -409,17 +426,31 @@ func _update_health(delta: float) -> void:
 		return
 	health = max(health - HEALTH_DECAY_PER_SEC * delta, 0.0)
 
+# ===== Damage Interface =====
+
+func take_damage(amount: float) -> void:
+	health -= amount
+	print("Player took damage! Health: ", health)
+	
+	if camera and camera.has_method("trigger_shake"):
+		camera.trigger_shake()
+		
+	if health <= 0:
+		print("Player died!")
+		get_tree().reload_current_scene()
+
 # ===== Setup =====
 
 func _setup_trajectory_dots() -> void:
-	dot_template.visible = false
-	var max_dots := int(MAX_LENGTH / DOT_SPACING)
-	for i in range(max_dots):
-		var dot := dot_template.duplicate() as Sprite2D
-		dot.visible = true
-		dot.scale = Vector2.ONE * DOT_SCALE * 1.0 / (1 + (i * 1.0) / 10)
-		dots_container.add_child(dot)
-		dots.append(dot)
+	if dot_template:
+		dot_template.visible = false
+		var max_dots := int(MAX_LENGTH / DOT_SPACING)
+		for i in range(max_dots):
+			var dot := dot_template.duplicate() as Sprite2D
+			dot.visible = true
+			dot.scale = Vector2.ONE * DOT_SCALE * 1.0 / (1 + (i * 1.0) / 10)
+			dots_container.add_child(dot)
+			dots.append(dot)
 
 func _setup_tongue_visual() -> void:
 	tongue_line = get_node_or_null("Tongue")
