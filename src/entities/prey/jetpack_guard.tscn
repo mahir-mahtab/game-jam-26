@@ -1,54 +1,54 @@
-[gd_scene load_steps=17 format=3 uid="uid://bo0u0g8i0eh04"]
+[gd_scene load_steps=17 format=3 uid="uid://ccwymonwgb3cj"]
 
-[ext_resource type="Script" uid="uid://dysif3fqvctiq" path="res://src/entities/prey/prey.gd" id="1_uuspj"]
-[ext_resource type="Texture2D" uid="uid://dhad73xknwdyp" path="res://assets/Units/Black Units/Lancer/Lancer_Idle.png" id="2_uahvo"]
+[ext_resource type="Texture2D" uid="uid://dhad73xknwdyp" path="res://assets/Units/Black Units/Lancer/Lancer_Idle.png" id="1_pwdsn"]
+[ext_resource type="Script" uid="uid://dp4xb23gtgvlm" path="res://src/entities/prey/jetpack_guard.gd" id="1_y3ggu"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_y5wba"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(0, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ftthi"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(320, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ruonm"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(640, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_87opm"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(960, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f08xt"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(1280, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_u5et7"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(1600, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fn6bl"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(1920, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gc7p4"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(2240, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0q082"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(2560, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3s5xn"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(2880, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0pa8y"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(3200, 0, 320, 320)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1mxlp"]
-atlas = ExtResource("2_uahvo")
+atlas = ExtResource("1_pwdsn")
 region = Rect2(3520, 0, 320, 320)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_8pnmx"]
@@ -99,9 +99,9 @@ animations = [{
 radius = 19.0
 height = 70.0
 
-[node name="Prey" type="CharacterBody2D"]
+[node name="jetpack_guard" type="CharacterBody2D"]
 scale = Vector2(0.5, 0.5)
-script = ExtResource("1_uuspj")
+script = ExtResource("1_y3ggu")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-2, -34)
