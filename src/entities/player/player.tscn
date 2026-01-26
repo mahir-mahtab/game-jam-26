@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://cadnjm2kabw85"]
+[gd_scene load_steps=19 format=3 uid="uid://cadnjm2kabw85"]
 
 [ext_resource type="Script" uid="uid://bh6dqam4yrryn" path="res://src/entities/player/player.gd" id="1_vt6n5"]
+[ext_resource type="PackedScene" uid="uid://bep8xu7ik74xm" path="res://src/entities/deadbody/deadbody.tscn" id="2_0mfjg"]
 [ext_resource type="Texture2D" uid="uid://cb78o1j1gjnfg" path="res://assets/Units/Character/bite.png" id="2_ketdh"]
 [ext_resource type="Texture2D" uid="uid://1ikidv6e647h" path="res://assets/Units/Character/idle.png" id="3_0mfjg"]
 [ext_resource type="Texture2D" uid="uid://dc24olrtfiwfc" path="res://assets/Units/Red Units/Archer/Archer_Run.png" id="3_muk8e"]
@@ -101,14 +102,14 @@ height = 115.826675
 [node name="CharacterBody2D" type="CharacterBody2D"]
 scale = Vector2(0.5, 0.5)
 script = ExtResource("1_vt6n5")
+dead_body_scene = ExtResource("2_0mfjg")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(4, -90)
 scale = Vector2(0.18951611, 0.18128645)
 sprite_frames = SubResource("SpriteFrames_eb65w")
-animation = &"idle"
+animation = &"run"
 autoplay = "idle"
-frame_progress = 0.5781995
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2, -60)

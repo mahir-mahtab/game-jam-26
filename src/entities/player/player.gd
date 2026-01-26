@@ -33,7 +33,7 @@ enum State {
 	TONGUE_EXTEND,
 	TONGUE_RETRACT
 }
-
+@export var dead_body_scene: PackedScene  # <--- MISSING
 # ===== Node References =====
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var dots_container: Node2D = $TrajectoryDots
@@ -184,7 +184,7 @@ func _process_tongue_extend(delta: float) -> void:
 	query.exclude = [get_rid()]
 	
 	# Enable Area collisions for Shields
-	query.collide_with_areas = true 
+	query.collide_with_areas=true
 	
 	var result = space_state.intersect_ray(query)
 	
@@ -236,61 +236,45 @@ func _process_tongue_retract(delta: float) -> void:
 
 func _change_state(new_state: State) -> void:
 	var old_state = current_state
+	
+	# EXIT logic for old state
+	match old_state:
+		State.PROJECTILE:
+			animated_sprite.rotation = 0
+			bounce_count = 0
+		State.STUCK:
+			pass # _unstick() is called manually in _launch_projectile
+	
 	current_state = new_state
 	
-	# EXIT logic
-	if old_state == State.PROJECTILE:
-		# Reset rotation and re-enable standard flipping when leaving projectile state
-		animated_sprite.rotation = 0
-		bounce_count = 0
-
-	# ENTER logic
+	# ENTER logic for new state
 	match new_state:
 		State.IDLE:
 			animated_sprite.play("idle")
 		State.MOVING:
 			animated_sprite.play("run")
 		State.PROJECTILE:
-			# Play the bite animation and ensure flip_h is off 
-			# so the "right side" (mouth) faces the direction of travel
-			animated_sprite.play("bite") 
+			# FIX: Play 'bite' and keep it facing the launch direction
+			animated_sprite.play("bite")
 			animated_sprite.flip_h = false 
 		State.STUCK:
 			velocity = Vector2.ZERO
-			# Keep the rotation if you want them to look "latched on" 
-			# or reset it here if they should stand upright on the prey.
-	current_state = new_state
-	
-	# Enter new state
-	match new_state:
-		State.IDLE:
-			animated_sprite.play("idle")
-		State.MOVING:
-			animated_sprite.play("run")
-		State.PROJECTILE:
-			animated_sprite.play("run")
-		State.STUCK:
-			velocity = Vector2.ZERO
-		State.TONGUE_EXTEND:
+		State.TONGUE_EXTEND, State.TONGUE_RETRACT:
+			# Tongue animations or visual changes could go here
 			pass
-		State.TONGUE_RETRACT:
-			pass
-
 # ===== Actions =====
-@export var dead_body_scene: PackedScene
+
 
 func _launch_projectile() -> void:
 	# 1. Spawn the dead body before moving
 	if dead_body_scene:
 		var body = dead_body_scene.instantiate()
 		body.global_position = global_position
-		# Match the player's current flip direction so the body faces the right way
-		var body_sprite = body.get_node("AnimatedSprite2D")
+		# Match player flip so the corpse faces the right way
+		var body_sprite = body.get_node_or_null("AnimatedSprite2D")
 		if body_sprite:
 			body_sprite.flip_h = animated_sprite.flip_h
-			
 		get_parent().add_child(body)
-
 	# 2. Proceed with the launch logic
 	_unstick()
 	var dir = (get_global_mouse_position() - global_position).normalized()
