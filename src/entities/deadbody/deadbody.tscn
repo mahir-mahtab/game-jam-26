@@ -1,3 +1,63 @@
-[gd_scene format=3 uid="uid://bep8xu7ik74xm"]
+[gd_scene load_steps=10 format=3 uid="uid://bep8xu7ik74xm"]
+
+[ext_resource type="Script" uid="uid://32tgyy7cjgfy" path="res://src/entities/deadbody/deadbody.gd" id="1_posf1"]
+[ext_resource type="Texture2D" uid="uid://dqpcuhc1eqj1e" path="res://assets/Units/Character/dead.png" id="2_xf2yh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xf2yh"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(0, 438, 1286, 783)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g2rib"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(1286, 438, 1286, 783)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7dfvr"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(0, 1221, 1286, 783)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xkewq"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(1286, 1221, 1286, 783)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jwgrc"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(0, 2004, 1286, 783)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ya6n"]
+atlas = ExtResource("2_xf2yh")
+region = Rect2(1286, 2004, 1286, 783)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_posf1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xf2yh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g2rib")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7dfvr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xkewq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jwgrc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ya6n")
+}],
+"loop": true,
+"name": &"die",
+"speed": 5.0
+}]
 
 [node name="Deadbody" type="Node2D"]
+script = ExtResource("1_posf1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(41, -66)
+scale = Vector2(0.17943208, 0.18007661)
+sprite_frames = SubResource("SpriteFrames_posf1")
+animation = &"die"

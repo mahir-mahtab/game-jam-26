@@ -39,7 +39,6 @@ enum State {
 @onready var dots_container: Node2D = $TrajectoryDots
 @onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
 @onready var camera: Camera2D = $Camera2D
-
 # ===== State Variables =====
 var current_state: State = State.IDLE
 var tongue_line: Line2D = null
@@ -185,7 +184,7 @@ func _process_tongue_extend(delta: float) -> void:
 	query.exclude = [get_rid()]
 	
 	# Enable Area collisions for Shields
-	query.collide_with_areas = true 
+	query.collide_with_areas = true 
 	
 	var result = space_state.intersect_ray(query)
 	
@@ -237,17 +236,29 @@ func _process_tongue_retract(delta: float) -> void:
 
 func _change_state(new_state: State) -> void:
 	var old_state = current_state
+	current_state = new_state
 	
-	# Exit old state
-	match old_state:
+	# EXIT logic
+	if old_state == State.PROJECTILE:
+		# Reset rotation and re-enable standard flipping when leaving projectile state
+		animated_sprite.rotation = 0
+		bounce_count = 0
+
+	# ENTER logic
+	match new_state:
+		State.IDLE:
+			animated_sprite.play("idle")
+		State.MOVING:
+			animated_sprite.play("run")
 		State.PROJECTILE:
-			if new_state != State.PROJECTILE:
-				bounce_count = 0
+			# Play the bite animation and ensure flip_h is off 
+			# so the "right side" (mouth) faces the direction of travel
+			animated_sprite.play("bite") 
+			animated_sprite.flip_h = false 
 		State.STUCK:
-			pass  # Cleanup handled by _unstick()
-		State.TONGUE_EXTEND, State.TONGUE_RETRACT:
-			pass  # Cleanup handled by _finish_tongue()
-	
+			velocity = Vector2.ZERO
+			# Keep the rotation if you want them to look "latched on" 
+			# or reset it here if they should stand upright on the prey.
 	current_state = new_state
 	
 	# Enter new state
@@ -266,19 +277,27 @@ func _change_state(new_state: State) -> void:
 			pass
 
 # ===== Actions =====
+@export var dead_body_scene: PackedScene
 
 func _launch_projectile() -> void:
-	# CRITICAL FIX 1: CONSUME THE HOST
-	if stuck_to != null and is_instance_valid(stuck_to):
-		stuck_to.queue_free() # Destroy the prey
-		
+	# 1. Spawn the dead body before moving
+	if dead_body_scene:
+		var body = dead_body_scene.instantiate()
+		body.global_position = global_position
+		# Match the player's current flip direction so the body faces the right way
+		var body_sprite = body.get_node("AnimatedSprite2D")
+		if body_sprite:
+			body_sprite.flip_h = animated_sprite.flip_h
+			
+		get_parent().add_child(body)
+
+	# 2. Proceed with the launch logic
 	_unstick()
-	
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	velocity = dir * PROJECTILE_SPEED
 	bounce_count = 0
 	_change_state(State.PROJECTILE)
-
+	
 func _launch_tongue() -> void:
 	# Cancel projectile if active
 	if current_state == State.PROJECTILE:
