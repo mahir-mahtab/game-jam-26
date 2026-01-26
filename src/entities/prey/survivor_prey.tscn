@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://hqwi2uw63d4r"]
 
-[ext_resource type="Script" uid="uid://duhr30co83n2v" path="res://survivor.gd" id="1_i0vdp"]
+[ext_resource type="Script" uid="uid://crdco0r41uy5p" path="res://src/entities/prey/survivor.gd" id="1_i0vdp"]
 [ext_resource type="Texture2D" uid="uid://cbtfbvhjwfdtf" path="res://assets/Untitled design(2).png" id="2_8nqno"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a6prc"]

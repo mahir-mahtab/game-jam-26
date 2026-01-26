@@ -2,8 +2,8 @@ extends CharacterBody2D
 
 # --- CONFIGURATION ---
 @export var wander_speed: float = 60.0
-@export var run_speed: float = 160.0 # Runs faster than walking
-@export var sight_range: float = 400.0 # How far away it spots you
+@export var run_speed: float = 120.0 # Runs faster than walking
+@export var sight_range: float = 200.0 # How far away it spots you
 
 # --- STATE ---
 enum { PATROL, FLEE }

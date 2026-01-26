@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="4_asyof"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="5_wr83h"]
 [ext_resource type="PackedScene" uid="uid://cu84teg8odtc4" path="res://src/entities/prey/riot_guard.tscn" id="6_asyof"]
-[ext_resource type="PackedScene" path="res://src/entities/prey/sniper.tscn" id="7_wr83h"]
+[ext_resource type="PackedScene" uid="uid://dy0aepppyvyjv" path="res://src/entities/prey/sniper.tscn" id="7_wr83h"]
 [ext_resource type="PackedScene" uid="uid://hqwi2uw63d4r" path="res://src/entities/prey/survivor_prey.tscn" id="8_q6hgi"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jc6su"]
