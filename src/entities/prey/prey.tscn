@@ -1,6 +1,6 @@
 [gd_scene load_steps=17 format=3 uid="uid://bo0u0g8i0eh04"]
 
-[ext_resource type="Script" uid="uid://delcje0g7h876" path="res://src/entities/prey/prey.gd" id="1_uuspj"]
+[ext_resource type="Script" uid="uid://dysif3fqvctiq" path="res://src/entities/prey/prey.gd" id="1_uuspj"]
 [ext_resource type="Texture2D" uid="uid://dhad73xknwdyp" path="res://assets/Units/Black Units/Lancer/Lancer_Idle.png" id="2_uahvo"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_y5wba"]
@@ -112,3 +112,10 @@ frame_progress = 0.89970547
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-3, -34)
 shape = SubResource("CapsuleShape2D_g2fhk")
+
+[node name="WallCheck" type="RayCast2D" parent="."]
+target_position = Vector2(20, 0)
+
+[node name="FloorCheck" type="RayCast2D" parent="."]
+position = Vector2(20, 0)
+target_position = Vector2(0, 20)

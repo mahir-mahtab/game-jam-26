@@ -1,0 +1,130 @@
+[gd_scene load_steps=17 format=3 uid="uid://dy0aepppyvyjv"]
+
+[ext_resource type="Texture2D" uid="uid://dhad73xknwdyp" path="res://assets/Units/Black Units/Lancer/Lancer_Idle.png" id="2_tfbnc"]
+[ext_resource type="Script" uid="uid://djalc66y6jnu7" path="res://src/entities/prey/sniper.gd" id="3_tfbnc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y5wba"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(0, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ftthi"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(320, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ruonm"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(640, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_87opm"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(960, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f08xt"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(1280, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u5et7"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(1600, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fn6bl"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(1920, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gc7p4"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(2240, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0q082"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(2560, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3s5xn"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(2880, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0pa8y"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(3200, 0, 320, 320)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1mxlp"]
+atlas = ExtResource("2_tfbnc")
+region = Rect2(3520, 0, 320, 320)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8pnmx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y5wba")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ftthi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ruonm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_87opm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f08xt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u5et7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fn6bl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gc7p4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0q082")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3s5xn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0pa8y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1mxlp")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 30.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g2fhk"]
+radius = 19.0
+height = 70.0
+
+[node name="sniper" type="CharacterBody2D"]
+scale = Vector2(0.5, 0.5)
+motion_mode = 1
+script = ExtResource("3_tfbnc")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-2, -34)
+sprite_frames = SubResource("SpriteFrames_8pnmx")
+animation = &"idle"
+frame_progress = 0.89970547
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-3, -34)
+shape = SubResource("CapsuleShape2D_g2fhk")
+
+[node name="WallCheck" type="RayCast2D" parent="."]
+target_position = Vector2(20, 0)
+
+[node name="FloorCheck" type="RayCast2D" parent="."]
+position = Vector2(20, 0)
+target_position = Vector2(0, 20)
+
+[node name="LaserSight" type="Line2D" parent="."]
+points = PackedVector2Array(2, -38)
+width = 2.0
+
+[node name="AimTimer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true
