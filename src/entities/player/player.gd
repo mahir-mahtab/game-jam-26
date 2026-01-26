@@ -161,7 +161,7 @@ func _process_projectile(delta: float) -> void:
 			elif collider.is_in_group("breakingwall"):
 				if collider.has_method("break_wall"):
 					collider.break_wall()
-				velocity = velocity * .8
+				velocity = velocity * .6
 				
 			else:
 				velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
