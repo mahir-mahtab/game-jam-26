@@ -99,7 +99,7 @@ animations = [{
 radius = 19.0
 height = 70.0
 
-[node name="Prey" type="CharacterBody2D"]
+[node name="Prey2" type="CharacterBody2D"]
 scale = Vector2(0.5, 0.5)
 script = ExtResource("1_uuspj")
 
