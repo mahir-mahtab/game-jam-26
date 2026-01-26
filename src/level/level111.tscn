@@ -1,10 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://vdrl6ug21uck"]
+[gd_scene load_steps=11 format=3 uid="uid://vdrl6ug21uck"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_dehh3"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_jc6su"]
-[ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="3_ui3cq"]
+[ext_resource type="Script" path="res://src/ui/gam/camera_2d.gd" id="3_ui3cq"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="4_asyof"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="5_wr83h"]
+[ext_resource type="PackedScene" uid="uid://cu84teg8odtc4" path="res://src/entities/prey/riot_guard.tscn" id="6_asyof"]
+[ext_resource type="PackedScene" path="res://src/entities/prey/sniper.tscn" id="7_wr83h"]
+[ext_resource type="PackedScene" uid="uid://hqwi2uw63d4r" path="res://src/entities/prey/survivor_prey.tscn" id="8_q6hgi"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jc6su"]
 texture = ExtResource("1_dehh3")
@@ -125,14 +128,22 @@ layer_1/tile_data = PackedInt32Array(393221, 458752, 2, 393222, 393216, 2, 39322
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_jc6su")]
 position = Vector2(132, 263)
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(578, 326)
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+scale = Vector2(2, 2)
+zoom = Vector2(2, 2)
 script = ExtResource("3_ui3cq")
 
 [node name="HUD" parent="." instance=ExtResource("4_asyof")]
 
 [node name="Prey" parent="." instance=ExtResource("5_wr83h")]
-position = Vector2(341, 259)
+position = Vector2(449, 294)
 
-[node name="Prey2" parent="." instance=ExtResource("5_wr83h")]
-position = Vector2(286, 356)
+[node name="riot_guard" parent="." instance=ExtResource("6_asyof")]
+position = Vector2(361, 248)
+scale = Vector2(0.6, 0.6)
+
+[node name="sniper" parent="." instance=ExtResource("7_wr83h")]
+position = Vector2(576, 294)
+
+[node name="survivor" parent="." instance=ExtResource("8_q6hgi")]
+position = Vector2(266, 288)

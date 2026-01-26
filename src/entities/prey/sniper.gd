@@ -27,20 +27,15 @@ func _ready() -> void:
 	
 	player_ref = get_tree().get_first_node_in_group("player")
 	if not player_ref:
-		print("[ERROR] Sniper cannot find any node in group 'player'!")
+		print("[ERROR] Sniper: Player not found!")
 	
 	aim_timer.timeout.connect(_on_shoot)
 	if randf() > 0.5: direction = Vector2.LEFT
 
 func _physics_process(_delta: float) -> void:
-	if is_zombified:
+	if is_zombified or being_pulled:
 		_cancel_aim()
 		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-
-	if being_pulled:
-		_cancel_aim()
 		move_and_slide()
 		return
 
@@ -66,46 +61,25 @@ func _process_patrol() -> void:
 func _check_for_player() -> void:
 	if not player_ref: return
 	
-	# DEBUG 1: Distance
+	# 1. Distance Check
 	var dist = global_position.distance_to(player_ref.global_position)
-	if dist > sight_range: 
-		# Uncomment if you suspect range issues
-		# print("[DEBUG] Player too far: ", dist)
-		return
+	if dist > sight_range: return
 	
-	# DEBUG 2: Direction
+	# 2. FOV Check (In front?)
 	var to_player = (player_ref.global_position - global_position).normalized()
-	if direction.dot(to_player) < 0: 
-		# print("[DEBUG] Player is behind me")
-		return 
+	if direction.dot(to_player) < 0: return 
 	
-	# DEBUG 3: Raycast Vision
+	# 3. Wall Check (Raycast)
 	var space = get_world_2d().direct_space_state
-	
-	# Start ray 30px forward to clear own hitbox
-	var start_pos = global_position + (direction * 30.0)
-	
-	var query = PhysicsRayQueryParameters2D.create(start_pos, player_ref.global_position)
-	
-	# EXCLUDE SELF AND CHILDREN (Important!)
-	var exceptions = [get_rid()]
-	for child in get_children():
-		if child is CollisionObject2D: # Exclude any child Areas/Bodies
-			exceptions.append(child.get_rid())
-	query.exclude = exceptions
-	
+	var query = _create_smart_query(player_ref.global_position)
 	var result = space.intersect_ray(query)
 	
-	if result:
-		if result.collider == player_ref:
-			_start_aiming()
-		else:
-			# CRITICAL DEBUG: This tells us what is blocking the view
-			print("[DEBUG] Vision Blocked by: ", result.collider.name)
+	# Only aim if we hit the player (not a wall)
+	if result and result.collider == player_ref:
+		_start_aiming()
 
 func _start_aiming() -> void:
 	if current_state == AIM: return
-	print("Sniper spotted player! Starting Aim.")
 	current_state = AIM
 	velocity = Vector2.ZERO 
 	laser_line.visible = true
@@ -115,30 +89,47 @@ func _process_aim() -> void:
 	if not player_ref:
 		_cancel_aim()
 		return
+		
+	# --- NEW: BREAK LOCK LOGIC ---
+	
+	# 1. Check if player ran behind us (Out of FOV)
+	var to_player = (player_ref.global_position - global_position).normalized()
+	if direction.dot(to_player) < 0:
+		_cancel_aim()
+		return
+
+	# 2. Check if a wall is now in the way
+	var space = get_world_2d().direct_space_state
+	var query = _create_smart_query(player_ref.global_position)
+	var result = space.intersect_ray(query)
+	
+	# If we hit anything that is NOT the player, vision is blocked
+	if result and result.collider != player_ref:
+		_cancel_aim()
+		return
+	
+	# 3. If clear, update Visuals
 	laser_line.clear_points()
 	laser_line.add_point(Vector2.ZERO)
 	laser_line.add_point(to_local(player_ref.global_position))
 
 func _on_shoot() -> void:
 	if current_state != AIM: return
+	if not is_inside_tree(): return
 	
+	# Double check line of sight one last time before firing
 	var space = get_world_2d().direct_space_state
-	var start_pos = global_position + (direction * 30.0)
-	var query = PhysicsRayQueryParameters2D.create(start_pos, player_ref.global_position)
-	query.exclude = [get_rid()]
-	
+	var query = _create_smart_query(player_ref.global_position)
 	var result = space.intersect_ray(query)
 	
 	if result and result.collider == player_ref:
 		print("BANG! Sniper hit player.")
 		if player_ref.has_method("take_damage"):
 			player_ref.take_damage(40.0)
-			laser_line.default_color = Color.WHITE
-	else:
-		if result:
-			print("Sniper shot blocked by: ", result.collider.name)
-		else:
-			print("Sniper shot missed (No collision?)")
+			
+		laser_line.default_color = Color.WHITE
+		if is_inside_tree():
+			await get_tree().create_timer(0.1).timeout
 	
 	_cancel_aim()
 
@@ -148,7 +139,18 @@ func _cancel_aim() -> void:
 	laser_line.default_color = Color(1, 0, 0)
 	aim_timer.stop()
 
-# Helper functions
+# Helper: Consolidates raycast logic so aimed shots and vision are identical
+func _create_smart_query(target_pos: Vector2) -> PhysicsRayQueryParameters2D:
+	var start_pos = global_position + (direction * 30.0)
+	var query = PhysicsRayQueryParameters2D.create(start_pos, target_pos)
+	
+	var exceptions = [get_rid()]
+	for child in get_children():
+		if child is CollisionObject2D:
+			exceptions.append(child.get_rid())
+	query.exclude = exceptions
+	return query
+
 func set_pulled_state(pulled: bool) -> void: being_pulled = pulled
 func set_zombified(state: bool) -> void: 
 	is_zombified = state

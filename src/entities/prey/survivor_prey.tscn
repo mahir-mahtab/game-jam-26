@@ -1,0 +1,78 @@
+[gd_scene load_steps=10 format=3 uid="uid://hqwi2uw63d4r"]
+
+[ext_resource type="Script" uid="uid://duhr30co83n2v" path="res://survivor.gd" id="1_i0vdp"]
+[ext_resource type="Texture2D" uid="uid://cbtfbvhjwfdtf" path="res://assets/Untitled design(2).png" id="2_8nqno"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a6prc"]
+atlas = ExtResource("2_8nqno")
+region = Rect2(0, 0, 710, 843)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tehkd"]
+atlas = ExtResource("2_8nqno")
+region = Rect2(710, 0, 710, 843)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bk1xq"]
+atlas = ExtResource("2_8nqno")
+region = Rect2(1420, 0, 710, 843)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vxv75"]
+atlas = ExtResource("2_8nqno")
+region = Rect2(2130, 0, 710, 843)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ldy8"]
+atlas = ExtResource("2_8nqno")
+region = Rect2(2840, 0, 710, 843)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0s2jd"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"new_animation",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a6prc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tehkd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bk1xq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vxv75")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ldy8")
+}],
+"loop": true,
+"name": &"new_animation_1",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t5xif"]
+radius = 11.0
+height = 46.0
+
+[node name="survivor" type="CharacterBody2D" groups=["prey"]]
+collision_layer = 2
+script = ExtResource("1_i0vdp")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+sprite_frames = SubResource("SpriteFrames_0s2jd")
+animation = &"new_animation_1"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("CapsuleShape2D_t5xif")
+
+[node name="PatrolTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true

@@ -22,7 +22,7 @@ func _ready() -> void:
 	if randf() > 0.5:
 		direction = -1
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# 1. ZOMBIFIED STATE (Player is attached/riding)
 	# We freeze completely so the player can aim without us walking away.
 	if is_zombified:
@@ -39,8 +39,8 @@ func _physics_process(delta: float) -> void:
 	
 	# 3. GRAVITY
 	# Apply gravity so they walk on the floor, not float in air
-	if not is_on_floor():
-		velocity.y += GRAVITY * delta
+	#if not is_on_floor():
+		#velocity.y += GRAVITY * delta
 	
 	# 4. NORMAL AI MOVEMENT
 	# Update raycasts to look ahead
@@ -49,7 +49,7 @@ func _physics_process(delta: float) -> void:
 	
 	# Turn around at walls OR if the floor check finds a gap (ledge)
 	# NEW: Added 'or is_on_wall()' as a backup failsafe
-	if wall_check.is_colliding() or is_on_wall() or (is_on_floor() and not floor_check.is_colliding()):
+	if wall_check.is_colliding() or is_on_wall():
 		direction *= -1
 	
 	velocity.x = direction * SPEED
