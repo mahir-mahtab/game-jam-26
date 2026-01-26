@@ -1,10 +1,9 @@
-[gd_scene load_steps=19 format=3 uid="uid://cadnjm2kabw85"]
+[gd_scene load_steps=14 format=3 uid="uid://cadnjm2kabw85"]
 
 [ext_resource type="Script" uid="uid://bh6dqam4yrryn" path="res://src/entities/player/player.gd" id="1_vt6n5"]
 [ext_resource type="PackedScene" uid="uid://bep8xu7ik74xm" path="res://src/entities/deadbody/deadbody.tscn" id="2_0mfjg"]
 [ext_resource type="Texture2D" uid="uid://cb78o1j1gjnfg" path="res://assets/Units/Character/bite.png" id="2_ketdh"]
 [ext_resource type="Texture2D" uid="uid://1ikidv6e647h" path="res://assets/Units/Character/idle.png" id="3_0mfjg"]
-[ext_resource type="Texture2D" uid="uid://dc24olrtfiwfc" path="res://assets/Units/Red Units/Archer/Archer_Run.png" id="3_muk8e"]
 [ext_resource type="Texture2D" uid="uid://coihi8dfjnaaw" path="res://assets/Basic_red_dot.png" id="4_wrxq6"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kc3pt"]
@@ -31,22 +30,6 @@ region = Rect2(992, 0, 992, 1013)
 atlas = ExtResource("3_0mfjg")
 region = Rect2(0, 1013, 992, 1013)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_eb65w"]
-atlas = ExtResource("3_muk8e")
-region = Rect2(0, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4f0qm"]
-atlas = ExtResource("3_muk8e")
-region = Rect2(192, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tk761"]
-atlas = ExtResource("3_muk8e")
-region = Rect2(384, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_n7e5a"]
-atlas = ExtResource("3_muk8e")
-region = Rect2(576, 0, 192, 192)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_eb65w"]
 animations = [{
 "frames": [{
@@ -61,7 +44,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"bite",
-"speed": 8.0
+"speed": 9.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -75,24 +58,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 7.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_eb65w")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4f0qm")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tk761")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_n7e5a")
-}],
-"loop": true,
-"name": &"run",
-"speed": 5.0
+"speed": 6.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4f0qm"]
@@ -106,17 +72,19 @@ dead_body_scene = ExtResource("2_0mfjg")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(4, -90)
-scale = Vector2(0.18951611, 0.18128645)
+scale = Vector2(0.105, 0.1)
 sprite_frames = SubResource("SpriteFrames_eb65w")
-animation = &"run"
+animation = &"bite"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2, -60)
 rotation = -2.8028946
+scale = Vector2(0.5, 0.5)
 shape = SubResource("CapsuleShape2D_4f0qm")
 
 [node name="TrajectoryDots" type="Node2D" parent="."]
+scale = Vector2(0.8, 0.8)
 
 [node name="DotTemplate" type="Sprite2D" parent="TrajectoryDots"]
 visible = false
