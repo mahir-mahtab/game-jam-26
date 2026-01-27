@@ -147,7 +147,7 @@ position = Vector2(287, 403)
 position = Vector2(276, 598)
 
 [node name="Prey4" parent="." instance=ExtResource("6_fawry")]
-position = Vector2(544, 191)
+position = Vector2(541, 215)
 
 [node name="levelExit" parent="." instance=ExtResource("7_fawry")]
 position = Vector2(551, 526)
