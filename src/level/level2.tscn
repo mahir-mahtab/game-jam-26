@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://um56fitj1y4a"]
+[gd_scene load_steps=12 format=3 uid="uid://um56fitj1y4a"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_tdoc0"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_lvqov"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://c17yhxtuxhgae" path="res://src/level/level_exit.tscn" id="6_jja43"]
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="7_fix8g"]
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_jja43"]
+[ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="9_hud"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ylps2"]
 texture = ExtResource("1_tdoc0")
@@ -153,3 +154,5 @@ position = Vector2(715, 908)
 position = Vector2(1123, 908)
 
 [node name="GameOverScreen" parent="." groups=["ui"] instance=ExtResource("8_jja43")]
+
+[node name="HUD" parent="." instance=ExtResource("9_hud")]

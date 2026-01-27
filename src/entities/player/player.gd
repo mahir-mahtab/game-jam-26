@@ -391,3 +391,19 @@ func _setup_tongue_visual() -> void:
 		tongue_line.visible = false
 		tongue_line.z_index = 1
 		add_child(tongue_line)
+
+# --- PUBLIC API FOR HUD ---
+func get_health() -> float:
+	return health
+
+func get_max_health() -> float:
+	return MAX_HEALTH
+
+func is_projectile_active() -> bool:
+	return current_state == State.PROJECTILE
+
+func is_tongue_active() -> bool:
+	return current_state == State.TONGUE_EXTEND or current_state == State.TONGUE_RETRACT
+
+func is_stuck() -> bool:
+	return current_state == State.STUCK

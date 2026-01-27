@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dkiw05aax26u4"]
+[gd_scene load_steps=11 format=3 uid="uid://dkiw05aax26u4"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_8rl7k"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_juem4"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://cu84teg8odtc4" path="res://src/entities/prey/riot_guard.tscn" id="4_rhgx4"]
 [ext_resource type="PackedScene" uid="uid://c17yhxtuxhgae" path="res://src/level/level_exit.tscn" id="5_rhgx4"]
 [ext_resource type="PackedScene" uid="uid://hqwi2uw63d4r" path="res://src/entities/prey/survivor_prey.tscn" id="6_nnkhl"]
+[ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="7_hud"]
+[ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_gameover"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e0smm"]
 texture = ExtResource("1_8rl7k")
@@ -150,3 +152,7 @@ position = Vector2(560, 305)
 [node name="survivor2" parent="." instance=ExtResource("6_nnkhl")]
 position = Vector2(617, 522)
 scale = Vector2(0.9, 0.9)
+
+[node name="HUD" parent="." instance=ExtResource("7_hud")]
+
+[node name="GameOverScreen" parent="." groups=["ui"] instance=ExtResource("8_gameover")]

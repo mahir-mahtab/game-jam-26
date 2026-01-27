@@ -20,9 +20,16 @@ func _find_player() -> CharacterBody2D:
 	var scene = get_tree().get_current_scene()
 	if scene == null:
 		return null
-	var node = scene.get_node_or_null("player")
-	if node != null and node is CharacterBody2D:
-		return node
+	# Try to find player by common names
+	var possible_names = ["player", "CharacterBody2D", "Player"]
+	for node_name in possible_names:
+		var node = scene.get_node_or_null(node_name)
+		if node != null and node is CharacterBody2D:
+			return node
+	# Fallback: search for player in "player" group
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0 and players[0] is CharacterBody2D:
+		return players[0]
 	return null
 
 func _update_display() -> void:
