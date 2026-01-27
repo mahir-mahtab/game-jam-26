@@ -1,13 +1,14 @@
-[gd_scene load_steps=11 format=3 uid="uid://kswv7eo7chbu"]
+[gd_scene load_steps=12 format=3 uid="uid://vdrl6ug21uck"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_jbfrm"]
-[ext_resource type="Script" uid="uid://d0k33necvtl1q" path="res://src/level/level_1.gd" id="1_mix2k"]
+[ext_resource type="Script" path="res://src/level/level_1.gd" id="1_mix2k"]
+[ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="2_56b5l"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_drb1a"]
-[ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="3_kwi0t"]
+[ext_resource type="Script" path="res://src/ui/gam/camera_2d.gd" id="3_kwi0t"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="4_fawry"]
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="5_kwi0t"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="6_fawry"]
-[ext_resource type="PackedScene" path="res://src/level/level_exit.tscn" id="7_fawry"]
+[ext_resource type="PackedScene" uid="uid://c17yhxtuxhgae" path="res://src/level/level_exit.tscn" id="7_fawry"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jc6su"]
 texture = ExtResource("1_jbfrm")
@@ -114,8 +115,10 @@ physics_layer_0/collision_layer = 1
 terrain_set_0/mode = 0
 sources/0 = SubResource("TileSetAtlasSource_jc6su")
 
-[node name="Level111" type="Node2D"]
+[node name="Level1" type="Node2D"]
 script = ExtResource("1_mix2k")
+
+[node name="GameOverScreen" parent="." groups=["ui"] instance=ExtResource("2_56b5l")]
 
 [node name="TileMap" type="TileMap" parent="."]
 scale = Vector2(1.5, 1.5)

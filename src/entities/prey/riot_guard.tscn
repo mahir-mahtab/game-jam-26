@@ -61,6 +61,7 @@ height = 56.0
 size = Vector2(49, 26)
 
 [node name="riot_guard" type="CharacterBody2D"]
+scale = Vector2(0.6, 0.6)
 script = ExtResource("1_fai5x")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

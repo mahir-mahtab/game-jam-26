@@ -299,15 +299,28 @@ func _update_health(delta: float) -> void:
 	if current_state == State.STUCK or current_state == State.PROJECTILE: return
 	health = max(health - HEALTH_DECAY_PER_SEC * delta, 0.0)
 	if health <= 0:
-		print("Player Died")
+		die()
+func die() -> void:
+	print("Player Died.")
+	
+	# 1. Find the Game Over Screen in the current scene
+	# (Assumes the node is named "GameOverScreen")
+	var _game_over_ui = get_tree().root.get_node_or_null("Level3/GameOverScreen") 
+	# Note: If your root node is named something else (like "Main" or "Level1"), change "Level3" above.
+	
+	# BETTER WAY (Group based):
+	# If you don't want to worry about paths, put the GameOverScreen in a group called "ui"
+	var ui_nodes = get_tree().get_nodes_in_group("ui")
+	if ui_nodes.size() > 0:
+		ui_nodes[0].game_over()
+	else:
+		# Fallback if UI is missing
 		get_tree().reload_current_scene()
-
 func take_damage(amount: float) -> void:
 	health -= amount
 	if camera and camera.has_method("trigger_shake"): camera.trigger_shake()
 	if health <= 0:
-		print("Player Died")
-		get_tree().reload_current_scene()
+		die()
 
 func _update_tongue_visual(tongue_tip_local: Vector2) -> void:
 	if not tongue_line: return
