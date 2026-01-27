@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/throw.mp3-9de947416c7bed8cc8eed119715a7036.mp
 [params]
 
 loop=false
-loop_offset=0
-bpm=0
+loop_offset=0.3
+bpm=0.0
 beat_count=0
 bar_beats=4

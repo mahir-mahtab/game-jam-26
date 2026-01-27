@@ -134,6 +134,7 @@ scale = Vector2(0.4, 0.4)
 position = Vector2(200, -200)
 scale = Vector2(2, 2)
 zoom = Vector2(2, 2)
+position_smoothing_enabled = true
 script = ExtResource("3_kwi0t")
 
 [node name="HUD" parent="." instance=ExtResource("4_fawry")]

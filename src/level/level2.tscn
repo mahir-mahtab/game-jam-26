@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://um56fitj1y4a"]
+[gd_scene load_steps=6 format=3 uid="uid://cuff71hjo7hfn"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_tdoc0"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_lvqov"]
@@ -128,6 +128,7 @@ position = Vector2(312, 935)
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
 position = Vector2(200, -200)
 zoom = Vector2(2, 2)
+position_smoothing_enabled = true
 
 [node name="Prey2" parent="." instance=ExtResource("3_lvqov")]
 position = Vector2(348, 780)
