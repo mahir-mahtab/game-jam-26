@@ -74,11 +74,7 @@ dead_body_scene = ExtResource("2_0mfjg")
 position = Vector2(4, -58)
 scale = Vector2(0.105, 0.1)
 sprite_frames = SubResource("SpriteFrames_eb65w")
-<<<<<<< Updated upstream
 animation = &"bite"
-=======
-animation = &"idle"
->>>>>>> Stashed changes
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
