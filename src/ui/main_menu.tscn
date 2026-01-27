@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxpy6m1oawcb7"]
+[gd_scene load_steps=8 format=3 uid="uid://dxpy6m1oawcb7"]
 
 [ext_resource type="Script" uid="uid://devxbh2ka7veq" path="res://src/ui/main_menu.gd" id="1_j3wvn"]
+[ext_resource type="Texture2D" uid="uid://clcqy8r51culw" path="res://src/ui/Gemini_Generated_Image_ldqc56ldqc56ldqc.png" id="2_f0s2b"]
+[ext_resource type="FontFile" uid="uid://c1ilb8smhi4iu" path="res://src/ui/gam/04B_30__.TTF" id="3_5mgu5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
 bg_color = Color(0.12, 0.12, 0.12, 0.4)
@@ -41,6 +43,7 @@ corner_radius_bottom_left = 4
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
 [node name="MainMenu" type="Control"]
+layout_direction = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,7 +61,28 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.08, 0.08, 1)
 
+[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="."]
+position = Vector2(573, 324.46918)
+scale = Vector2(0.2903226, 0.3016534)
+texture = ExtResource("2_f0s2b")
+
+[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="GeminiGeneratedImageLdqc56Ldqc56Ldqc"]
+position = Vector2(-1302, 11.704895)
+scale = Vector2(0.2903226, 0.3016534)
+texture = ExtResource("2_f0s2b")
+
+[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="GeminiGeneratedImageLdqc56Ldqc56Ldqc/GeminiGeneratedImageLdqc56Ldqc56Ldqc"]
+position = Vector2(-1302, 11.704895)
+scale = Vector2(0.2903226, 0.3016534)
+texture = ExtResource("2_f0s2b")
+
+[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="GeminiGeneratedImageLdqc56Ldqc56Ldqc/GeminiGeneratedImageLdqc56Ldqc56Ldqc/GeminiGeneratedImageLdqc56Ldqc56Ldqc"]
+position = Vector2(-1302, 11.704895)
+scale = Vector2(0.2903226, 0.3016534)
+texture = ExtResource("2_f0s2b")
+
 [node name="MarginContainer" type="MarginContainer" parent="."]
+layout_direction = 3
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -71,6 +95,7 @@ theme_override_constants/margin_right = 60
 theme_override_constants/margin_bottom = 60
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_direction = 3
 layout_mode = 2
 theme_override_constants/separation = 40
 alignment = 1
@@ -79,12 +104,12 @@ alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)
 theme_override_font_sizes/font_size = 64
-text = "EQUAL LIFE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="MenuOptions" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 0)
+layout_direction = 3
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 12
@@ -94,6 +119,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.8)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_5mgu5")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
@@ -111,7 +137,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
-text = "SETTINGS"
+text = "CLICK THE UPPER BUTTON"
 
 [node name="CreditsButton" type="Button" parent="MarginContainer/VBoxContainer/MenuOptions"]
 custom_minimum_size = Vector2(0, 50)
@@ -123,7 +149,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
-text = "CREDITS"
+text = "CLICK THE UPPER BUTTON"
 
 [node name="QuitButton" type="Button" parent="MarginContainer/VBoxContainer/MenuOptions"]
 custom_minimum_size = Vector2(0, 50)
@@ -135,7 +161,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
-text = "EXIT"
+text = "QUIT"
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1

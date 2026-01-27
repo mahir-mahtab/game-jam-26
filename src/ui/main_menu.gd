@@ -4,7 +4,7 @@ extends Control
 ## Handles navigation between menu options and scene transitions
 
 # Path to your main game scene (update this when you create it)
-const GAME_SCENE_PATH = "res://src/level/level1.tscn"
+const GAME_SCENE_PATH = "res://src/ui/gam/game.tscn"
 
 @onready var menu_options = $MarginContainer/VBoxContainer/MenuOptions
 @onready var play_button = $MarginContainer/VBoxContainer/MenuOptions/PlayButton
