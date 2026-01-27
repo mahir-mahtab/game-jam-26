@@ -129,7 +129,7 @@ position = Vector2(192, 600)
 scale = Vector2(0.4, 0.4)
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
-position = Vector2(240, -240)
+position = Vector2(200, -200)
 scale = Vector2(2, 2)
 zoom = Vector2(2, 2)
 script = ExtResource("3_kwi0t")

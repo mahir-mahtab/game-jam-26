@@ -1,8 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://um56fitj1y4a"]
+[gd_scene load_steps=10 format=3 uid="uid://um56fitj1y4a"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_tdoc0"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_lvqov"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="3_lvqov"]
+[ext_resource type="PackedScene" uid="uid://dy0aepppyvyjv" path="res://src/entities/prey/sniper.tscn" id="4_a80yt"]
+[ext_resource type="PackedScene" uid="uid://hqwi2uw63d4r" path="res://src/entities/prey/survivor_prey.tscn" id="5_fix8g"]
+[ext_resource type="PackedScene" uid="uid://c17yhxtuxhgae" path="res://src/level/level_exit.tscn" id="6_jja43"]
+[ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="7_fix8g"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ylps2"]
 texture = ExtResource("1_tdoc0")
@@ -122,8 +126,26 @@ layer_1/tile_data = PackedInt32Array(1900555, 393216, 3, 1900556, 393216, 3, 196
 position = Vector2(312, 935)
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
-position = Vector2(240, -240)
+position = Vector2(200, -200)
 zoom = Vector2(2, 2)
 
 [node name="Prey2" parent="." instance=ExtResource("3_lvqov")]
-position = Vector2(426, 897)
+position = Vector2(348, 780)
+
+[node name="sniper" parent="." instance=ExtResource("4_a80yt")]
+position = Vector2(1163, 642)
+
+[node name="survivor" parent="." instance=ExtResource("5_fix8g")]
+position = Vector2(912, 936)
+
+[node name="levelExit" parent="." instance=ExtResource("6_jja43")]
+position = Vector2(1103, 247)
+rotation = 3.1415927
+scale = Vector2(0.63, 0.63)
+next_level_scene = "res://src/level/level3.tscn"
+
+[node name="Breakingwall" parent="." instance=ExtResource("7_fix8g")]
+position = Vector2(715, 908)
+
+[node name="Breakingwall2" parent="." instance=ExtResource("7_fix8g")]
+position = Vector2(1123, 908)
