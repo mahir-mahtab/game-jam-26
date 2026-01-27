@@ -66,7 +66,6 @@ radius = 24.0
 height = 115.826675
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
-scale = Vector2(0.5, 0.5)
 scale = Vector2(0.25, 0.25)
 script = ExtResource("1_vt6n5")
 dead_body_scene = ExtResource("2_0mfjg")
@@ -75,8 +74,11 @@ dead_body_scene = ExtResource("2_0mfjg")
 position = Vector2(4, -90)
 scale = Vector2(0.105, 0.1)
 sprite_frames = SubResource("SpriteFrames_eb65w")
+<<<<<<< Updated upstream
 animation = &"bite"
+=======
 animation = &"idle"
+>>>>>>> Stashed changes
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
