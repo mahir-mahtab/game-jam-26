@@ -1,7 +1,7 @@
-[gd_scene load_steps=23 format=3 uid="uid://bu6rppmbfl8kf"]
+[gd_scene load_steps=15 format=3 uid="uid://bu6rppmbfl8kf"]
 
 [ext_resource type="Texture2D" uid="uid://d1nabwujiyshr" path="res://assets/Particle FX/Explosion_02.png" id="1_dqbxw"]
-[ext_resource type="Texture2D" uid="uid://vbvomkc3oett" path="res://assets/Terrain/Resources/Wood/Trees/Tree2.png" id="2_j6224"]
+[ext_resource type="Texture2D" uid="uid://bcoee8teswf66" path="res://assets/Terrain/Tileset/Untitled design(3).png" id="3_j6224"]
 [ext_resource type="Script" uid="uid://dd4kedr7hinmt" path="res://src/entities/breaking block/breakingwall.gd" id="3_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fntma"]
@@ -39,38 +39,6 @@ region = Rect2(1344, 0, 192, 192)
 [sub_resource type="AtlasTexture" id="AtlasTexture_iuanm"]
 atlas = ExtResource("1_dqbxw")
 region = Rect2(1536, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rqroy"]
-atlas = ExtResource("2_j6224")
-region = Rect2(0, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_k863j"]
-atlas = ExtResource("2_j6224")
-region = Rect2(192, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_0tqrv"]
-atlas = ExtResource("2_j6224")
-region = Rect2(384, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rkfbj"]
-atlas = ExtResource("2_j6224")
-region = Rect2(576, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_jy4no"]
-atlas = ExtResource("2_j6224")
-region = Rect2(768, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_bt4i2"]
-atlas = ExtResource("2_j6224")
-region = Rect2(960, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_wshw5"]
-atlas = ExtResource("2_j6224")
-region = Rect2(1152, 0, 192, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hwb73"]
-atlas = ExtResource("2_j6224")
-region = Rect2(1344, 0, 192, 256)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_aav0g"]
 animations = [{
@@ -135,28 +103,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_rqroy")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_k863j")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_0tqrv")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rkfbj")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_jy4no")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_bt4i2")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_wshw5")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hwb73")
+"texture": ExtResource("3_j6224")
 }],
 "loop": true,
 "name": &"idle",
@@ -171,13 +118,11 @@ scale = Vector2(0.5, 0.5)
 script = ExtResource("3_script")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, 11)
-scale = Vector2(1, 1.1145834)
+position = Vector2(6, 19.000023)
+scale = Vector2(0.17291668, 0.35)
 sprite_frames = SubResource("SpriteFrames_aav0g")
-animation = &"break"
+animation = &"idle"
 autoplay = "idle"
-frame = 7
-frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(7.25, 13.75)
