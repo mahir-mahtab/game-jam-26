@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://bep8xu7ik74xm"]
 
-[ext_resource type="Script" path="res://src/entities/deadbody/deadbody.gd" id="1_posf1"]
+[ext_resource type="Script" uid="uid://32tgyy7cjgfy" path="res://src/entities/deadbody/deadbody.gd" id="1_posf1"]
 [ext_resource type="Texture2D" uid="uid://dqpcuhc1eqj1e" path="res://assets/Units/Character/dead.png" id="2_xf2yh"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xf2yh"]
@@ -54,6 +54,7 @@ animations = [{
 }]
 
 [node name="Deadbody" type="Node2D"]
+scale = Vector2(0.48, 0.48)
 script = ExtResource("1_posf1")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
