@@ -100,7 +100,7 @@ radius = 19.0
 height = 70.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fai5x"]
-size = Vector2(24, 54)
+size = Vector2(49, 26)
 
 [node name="riot_guard" type="CharacterBody2D"]
 script = ExtResource("1_fai5x")
@@ -125,5 +125,5 @@ target_position = Vector2(0, 20)
 [node name="Shield" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Shield" groups=["Shield"]]
-position = Vector2(9, -30)
+position = Vector2(1, -9)
 shape = SubResource("RectangleShape2D_fai5x")

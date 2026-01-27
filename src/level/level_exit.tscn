@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://c17yhxtuxhgae"]
+
+[ext_resource type="Script" uid="uid://cxxs46jn8o8s7" path="res://src/level/level_exit.gd" id="1_j556y"]
+[ext_resource type="Texture2D" uid="uid://xly7m7o55cga" path="res://assets/doubleDoor.png" id="2_pgf57"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_whe5f"]
+size = Vector2(165, 109)
+
+[node name="levelExit" type="Area2D"]
+script = ExtResource("1_j556y")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="triggerZone" type="CollisionShape2D" parent="."]
+position = Vector2(-1.5, 1.5)
+shape = SubResource("RectangleShape2D_whe5f")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(-0.9999962, 1.0000001)
+scale = Vector2(1.5892859, 1.0178571)
+texture = ExtResource("2_pgf57")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

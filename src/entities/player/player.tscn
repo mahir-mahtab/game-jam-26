@@ -71,14 +71,14 @@ script = ExtResource("1_vt6n5")
 dead_body_scene = ExtResource("2_0mfjg")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(4, -90)
+position = Vector2(4, -58)
 scale = Vector2(0.105, 0.1)
 sprite_frames = SubResource("SpriteFrames_eb65w")
 animation = &"bite"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(2, -60)
+position = Vector2(2, -28)
 rotation = -2.8028946
 scale = Vector2(0.5, 0.5)
 shape = SubResource("CapsuleShape2D_4f0qm")
