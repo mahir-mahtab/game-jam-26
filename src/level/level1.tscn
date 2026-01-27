@@ -1,12 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://vdrl6ug21uck"]
+[gd_scene load_steps=10 format=3 uid="uid://kswv7eo7chbu"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_jbfrm"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_drb1a"]
-[ext_resource type="Script" path="res://src/ui/gam/camera_2d.gd" id="3_kwi0t"]
+[ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="3_kwi0t"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="4_fawry"]
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="5_kwi0t"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="6_fawry"]
-[ext_resource type="PackedScene" uid="uid://c17yhxtuxhgae" path="res://src/level/level_exit.tscn" id="7_fawry"]
+[ext_resource type="PackedScene" path="res://src/level/level_exit.tscn" id="7_fawry"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jc6su"]
 texture = ExtResource("1_jbfrm")
@@ -132,6 +132,7 @@ scale = Vector2(0.4, 0.4)
 position = Vector2(240, -240)
 scale = Vector2(2, 2)
 zoom = Vector2(2, 2)
+position_smoothing_enabled = true
 script = ExtResource("3_kwi0t")
 
 [node name="HUD" parent="." instance=ExtResource("4_fawry")]

@@ -1,10 +1,13 @@
-[gd_scene load_steps=14 format=3 uid="uid://cadnjm2kabw85"]
+[gd_scene load_steps=17 format=3 uid="uid://cadnjm2kabw85"]
 
 [ext_resource type="Script" uid="uid://bh6dqam4yrryn" path="res://src/entities/player/player.gd" id="1_vt6n5"]
 [ext_resource type="PackedScene" uid="uid://bep8xu7ik74xm" path="res://src/entities/deadbody/deadbody.tscn" id="2_0mfjg"]
 [ext_resource type="Texture2D" uid="uid://cb78o1j1gjnfg" path="res://assets/Units/Character/bite.png" id="2_ketdh"]
 [ext_resource type="Texture2D" uid="uid://1ikidv6e647h" path="res://assets/Units/Character/idle.png" id="3_0mfjg"]
 [ext_resource type="Texture2D" uid="uid://coihi8dfjnaaw" path="res://assets/Basic_red_dot.png" id="4_wrxq6"]
+[ext_resource type="AudioStream" uid="uid://coo20wxq0mu1u" path="res://assets/music/throw.mp3" id="6_eb65w"]
+[ext_resource type="AudioStream" uid="uid://d3p2owh1wsoav" path="res://assets/music/bite.mp3" id="7_4f0qm"]
+[ext_resource type="AudioStream" uid="uid://85lcci70n77l" path="res://assets/music/bounce.mp3" id="8_tk761"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kc3pt"]
 atlas = ExtResource("2_ketdh")
@@ -90,3 +93,13 @@ scale = Vector2(0.8, 0.8)
 visible = false
 rotation = -0.85346603
 texture = ExtResource("4_wrxq6")
+
+[node name="ThrowSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_eb65w")
+attenuation = 1.6817905
+
+[node name="BiteSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("7_4f0qm")
+
+[node name="BounceSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_tk761")

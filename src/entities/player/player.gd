@@ -38,6 +38,9 @@ enum State {
 }
 @export var dead_body_scene: PackedScene  # <--- MISSING
 # ===== Node References =====
+@onready var sfx_bite: AudioStreamPlayer2D = $BiteSound
+@onready var sfx_bounce: AudioStreamPlayer2D = $BounceSound
+@onready var sfx_throw: AudioStreamPlayer2D = $ThrowSound
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var dots_container: Node2D = $TrajectoryDots
 @onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
@@ -117,6 +120,7 @@ func _process_projectile(delta: float) -> void:
 	var collision = move_and_collide(velocity * delta)
 	if collision:
 		var collider = collision.get_collider()
+		sfx_bounce.play(.04)
 		if collider.is_in_group("shield"):
 			print("Clang! Hit Shield.")
 			velocity = velocity.bounce(collision.get_normal()) * 0.3
@@ -128,6 +132,7 @@ func _process_projectile(delta: float) -> void:
 			if collider.has_method("break_wall"): collider.break_wall()
 			velocity = velocity * 0.6
 		else:
+			sfx_bounce.play(.4)
 			velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
 			bounce_count += 1
 			global_position += collision.get_normal() * 1.0
@@ -224,6 +229,7 @@ func _change_state(new_state: State) -> void:
 
 func _launch_projectile() -> void:
 	# 1. Spawn the dead body before moving
+	sfx_throw.play(.4)
 	if dead_body_scene:
 		var body = dead_body_scene.instantiate()
 		body.global_position = global_position
@@ -267,6 +273,7 @@ func _unstick() -> void:
 	stuck_offset = Vector2.ZERO
 
 func _catch_prey(prey_node: CharacterBody2D) -> void:
+	sfx_bite.play()
 	caught_prey = prey_node
 	if camera and camera.has_method("trigger_shake"): camera.trigger_shake()
 	add_collision_exception_with(prey_node)
