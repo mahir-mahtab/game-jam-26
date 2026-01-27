@@ -8,7 +8,7 @@ extends CharacterBody2D
 const SPEED = 300.0
 const PROJECTILE_SPEED = 1000.0
 const PROJECTILE_DECELERATION = 400.0
-const BOUNCE_DAMPING = 0.6 
+const BOUNCE_DAMPING = 0.7 
 const MAX_BOUNCE_FOR_PLAYER = 3
 
 # --- HEALTH CONSTANTS ---
@@ -130,15 +130,15 @@ func _process_projectile(delta: float) -> void:
 			_stick_to_prey(collider)
 		elif collider.is_in_group("breakingwall"):
 			if collider.has_method("break_wall"): collider.break_wall()
-			velocity = velocity * 0.6
+			velocity = velocity * 0.8
 		else:
 			sfx_bounce.play(.4)
 			velocity = velocity.bounce(collision.get_normal()) * BOUNCE_DAMPING
 			bounce_count += 1
 			global_position += collision.get_normal() * 1.0
 			if bounce_count >= MAX_BOUNCE_FOR_PLAYER:
-				velocity = Vector2.ZERO
-				_change_state(State.IDLE)
+				velocity = velocity*.4
+				#_change_state(State.IDLE)
 
 func _process_stuck(_delta: float) -> void:
 	velocity = Vector2.ZERO
