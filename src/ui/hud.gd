@@ -4,17 +4,42 @@ extends CanvasLayer
 @onready var charge_indicator: ProgressBar = $MarginContainer/VBoxContainer/ChargeIndicator
 @onready var health_bar: ProgressBar = $MarginContainer/VBoxContainer/HealthBar
 @onready var health_label: Label = $MarginContainer/VBoxContainer/HealthBar/HealthLabel
+@onready var exit_arrow: Polygon2D = $ExitArrowContainer/Arrow
+@onready var exit_arrow_container: Control = $ExitArrowContainer
 
 var player: CharacterBody2D = null
+var level_exit: Node2D = null
+var _original_health_bar_color: Color
 
 func _ready() -> void:
 	player = _find_player()
+	level_exit = _find_level_exit()
 	_update_display()
+	_connect_player_signals()
+	# Store original health bar color
+	if health_bar:
+		_original_health_bar_color = health_bar.modulate
 
 func _process(_delta: float) -> void:
 	if player == null or not is_instance_valid(player):
 		player = _find_player()
+		_connect_player_signals()
+	if level_exit == null or not is_instance_valid(level_exit):
+		level_exit = _find_level_exit()
 	_update_display()
+	_update_exit_arrow()
+
+func _connect_player_signals() -> void:
+	if player and player.has_signal("damage_taken"):
+		if not player.is_connected("damage_taken", _on_player_damaged):
+			player.connect("damage_taken", _on_player_damaged)
+
+func _on_player_damaged() -> void:
+	# Flash health bar red
+	if health_bar:
+		health_bar.modulate = Color(2.0, 0.2, 0.2, 1.0)  # Bright red
+		var tween = create_tween()
+		tween.tween_property(health_bar, "modulate", _original_health_bar_color, 0.4)
 
 func _find_player() -> CharacterBody2D:
 	var scene = get_tree().get_current_scene()
@@ -31,6 +56,44 @@ func _find_player() -> CharacterBody2D:
 	if players.size() > 0 and players[0] is CharacterBody2D:
 		return players[0]
 	return null
+
+func _find_level_exit() -> Node2D:
+	# Find the level exit node (levelExit is the name used in level scenes)
+	var scene = get_tree().get_current_scene()
+	if scene == null:
+		return null
+	var exit = scene.get_node_or_null("levelExit")
+	if exit != null:
+		return exit
+	# Search recursively as fallback
+	return _find_node_by_name(scene, "levelExit")
+
+func _find_node_by_name(node: Node, target_name: String) -> Node2D:
+	if node.name == target_name and node is Node2D:
+		return node
+	for child in node.get_children():
+		var found = _find_node_by_name(child, target_name)
+		if found != null:
+			return found
+	return null
+
+func _update_exit_arrow() -> void:
+	if exit_arrow == null or exit_arrow_container == null:
+		return
+	
+	# Hide arrow if player or exit not found
+	if player == null or not is_instance_valid(player) or level_exit == null or not is_instance_valid(level_exit):
+		exit_arrow_container.visible = false
+		return
+	
+	exit_arrow_container.visible = true
+	
+	# Calculate direction from player to exit
+	var direction = (level_exit.global_position - player.global_position).normalized()
+	
+	# Convert direction to angle (pointing up is 0 degrees)
+	var angle = direction.angle() + PI / 2  # Add 90 degrees since arrow points up by default
+	exit_arrow.rotation = angle
 
 func _update_display() -> void:
 	if feedback_label == null or charge_indicator == null or health_bar == null or health_label == null:

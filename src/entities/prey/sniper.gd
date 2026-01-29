@@ -3,6 +3,8 @@ extends CharacterBody2D
 # --- CONFIGURATION ---
 @export var patrol_speed: float = 40.0
 @export var sight_range: float = 450.0
+@export var laser_damage: float = 10.0  # Reduced damage for more frequent hits
+@export var aim_time: float = 0.8  # Time before shooting (faster)
 
 # --- STATE ---
 enum { PATROL, AIM }
@@ -83,6 +85,7 @@ func _start_aiming() -> void:
 	current_state = AIM
 	velocity = Vector2.ZERO 
 	laser_line.visible = true
+	aim_timer.wait_time = aim_time
 	aim_timer.start()
 
 func _process_aim() -> void:
@@ -125,7 +128,7 @@ func _on_shoot() -> void:
 	if result and result.collider == player_ref:
 		print("BANG! Sniper hit player.")
 		if player_ref.has_method("take_damage"):
-			player_ref.take_damage(40.0)
+			player_ref.take_damage(laser_damage)
 			
 		laser_line.default_color = Color.WHITE
 		if is_inside_tree():

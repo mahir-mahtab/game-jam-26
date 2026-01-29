@@ -4,6 +4,7 @@ extends CharacterBody2D
 ##  PLAYER CONTROLLER - FINAL CORRECTED
 ## ==============================================================================
 
+signal damage_taken  # Emitted when player takes damage
 # --- PHYSICS CONSTANTS ---
 const SPEED = 300.0
 const PROJECTILE_SPEED = 1000.0
@@ -13,7 +14,7 @@ const MAX_BOUNCE_FOR_PLAYER = 3
 
 # --- HEALTH CONSTANTS ---
 const MAX_HEALTH = 100.0
-const HEALTH_DECAY_PER_SEC = 5.0
+const HEALTH_DECAY_PER_SEC = 15.0
 
 # --- TONGUE CONSTANTS ---
 const TONGUE_SPEED = 1500.0
@@ -30,7 +31,6 @@ const DOT_SCALE = 0.02
 # ===== State Enum =====
 enum State {
 	IDLE,
-	MOVING,
 	PROJECTILE,
 	STUCK,
 	TONGUE_EXTEND,
@@ -66,7 +66,6 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	match current_state:
 		State.IDLE:           _process_idle(delta)
-		State.MOVING:         _process_moving(delta)
 		State.PROJECTILE:     _process_projectile(delta)
 		State.STUCK:          _process_stuck(delta)
 		State.TONGUE_EXTEND:  _process_tongue_extend(delta)
@@ -87,24 +86,13 @@ func _handle_left_click() -> void:
 	if current_state == State.STUCK: _launch_projectile()
 
 func _handle_right_click() -> void:
-	if current_state in [State.IDLE, State.MOVING, State.PROJECTILE]: _launch_tongue()
+	if current_state in [State.IDLE, State.PROJECTILE]: _launch_tongue()
 
 func _process_idle(_delta: float) -> void:
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if input_dir != Vector2.ZERO: _change_state(State.MOVING)
-	else:
-		velocity = velocity.move_toward(Vector2.ZERO, SPEED)
-		animated_sprite.play("idle")
-		move_and_slide()
-
-func _process_moving(_delta: float) -> void:
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if input_dir == Vector2.ZERO: _change_state(State.IDLE)
-	else:
-		velocity = input_dir * SPEED
-		if input_dir.x != 0: animated_sprite.flip_h = (input_dir.x < 0)
-		animated_sprite.play("run")
-		move_and_slide()
+	# No arrow key movement - player only moves via projectile launch
+	velocity = velocity.move_toward(Vector2.ZERO, SPEED)
+	animated_sprite.play("idle")
+	move_and_slide()
 
 func _process_projectile(delta: float) -> void:
 	var current_speed = velocity.length()
@@ -213,8 +201,6 @@ func _change_state(new_state: State) -> void:
 	match new_state:
 		State.IDLE:
 			animated_sprite.play("idle")
-		State.MOVING:
-			animated_sprite.play("run")
 		State.PROJECTILE:
 			# FIX: Play 'bite' and keep it facing the launch direction
 			animated_sprite.play("bite")
@@ -269,13 +255,18 @@ func _stick_to_prey(prey_node: Node2D) -> void:
 	_change_state(State.STUCK)
 
 func _unstick() -> void:
+	# Destroy the prey when leaving it
+	if stuck_to != null and is_instance_valid(stuck_to):
+		stuck_to.queue_free()
 	stuck_to = null
 	stuck_offset = Vector2.ZERO
 
 func _catch_prey(prey_node: CharacterBody2D) -> void:
 	sfx_bite.play()
 	caught_prey = prey_node
-	if camera and camera.has_method("trigger_shake"): camera.trigger_shake()
+	if camera:
+		if camera.has_method("trigger_shake"): camera.trigger_shake()
+		if camera.has_method("trigger_kill_zoom"): camera.trigger_kill_zoom()
 	add_collision_exception_with(prey_node)
 	if prey_node.has_method("set_pulled_state"): prey_node.set_pulled_state(true)
 	_change_state(State.TONGUE_RETRACT)
@@ -319,8 +310,23 @@ func die() -> void:
 func take_damage(amount: float) -> void:
 	health -= amount
 	if camera and camera.has_method("trigger_shake"): camera.trigger_shake()
+	
+	# Flash red glow effect
+	_flash_damage()
+	
+	# Notify HUD to flash health bar
+	damage_taken.emit()
+	
 	if health <= 0:
 		die()
+
+func _flash_damage() -> void:
+	# Make character glow red when hit
+	var original_modulate = animated_sprite.modulate
+	animated_sprite.modulate = Color(2.0, 0.3, 0.3, 1.0)  # Bright red glow
+	
+	var tween = create_tween()
+	tween.tween_property(animated_sprite, "modulate", original_modulate, 0.3)
 
 func _update_tongue_visual(tongue_tip_local: Vector2) -> void:
 	if not tongue_line: return

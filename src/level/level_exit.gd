@@ -4,8 +4,8 @@ extends Area2D
 @export_file("*.tscn") var next_level_scene: String
 
 func _ready() -> void:
-	# Connect the signal via code (or do it in the editor)
-	body_entered.connect(_on_body_entered)
+	# Signal is already connected in the .tscn file via Editor
+	pass
 
 func _on_body_entered(body: Node2D) -> void:
 	# 1. Check if the object entering is the Player
