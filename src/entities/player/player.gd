@@ -7,10 +7,11 @@ extends CharacterBody2D
 signal damage_taken  # Emitted when player takes damage
 
 # --- PHYSICS CONSTANTS ---
-const SPEED = 300.0
-const PROJECTILE_SPEED = 1000.0
-const PROJECTILE_DECELERATION = 400.0
-const BOUNCE_DAMPING = 0.7 
+const SPEED = 500.0
+const PROJECTILE_SPEED = 400.0
+const PROJECTILE_DECELERATION = 200.0
+const DECELERATION_THRESHOLD = 200.0  # Speed below which deceleration kicks in
+const BOUNCE_DAMPING = 0.6
 const MAX_BOUNCE_FOR_PLAYER = 3
 
 # --- HEALTH CONSTANTS ---
@@ -30,7 +31,7 @@ const IMPACT_FREEZE_TIME = 0.1 # Pause for 0.1s when hitting prey to sell the im
 const DOT_SPACING = 21.0
 const MAX_LENGTH = 1000.0
 const DOT_SCALE = 0.02
-const HEAD_OFFSET = Vector2(1, -14.5)
+const HEAD_OFFSET = Vector2(8, -14.5)
 
 # ===== State Enum =====
 enum State {
@@ -51,7 +52,7 @@ enum State {
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var dots_container: Node2D = $TrajectoryDots
 @onready var dot_template: Sprite2D = $TrajectoryDots/DotTemplate
-@onready var camera: Camera2D = $Camera2D
+var camera: Camera2D  # Found at runtime since it's added externally in game.tscn
 
 # ===== State Variables =====
 var current_state: State = State.IDLE
@@ -71,6 +72,26 @@ func _ready() -> void:
 	motion_mode = MOTION_MODE_FLOATING
 	_setup_trajectory_dots()
 	_setup_tongue_visual()
+	# Find camera after scene tree is fully set up
+	call_deferred("_find_camera")
+
+func _find_camera() -> void:
+	# Search for Camera2D in the scene tree
+	var cameras = get_tree().get_nodes_in_group("camera")
+	if cameras.size() > 0:
+		camera = cameras[0]
+	else:
+		# Fallback: find any Camera2D in the tree
+		camera = _find_node_by_type(get_tree().root, "Camera2D")
+
+func _find_node_by_type(node: Node, type_name: String) -> Node:
+	if node.get_class() == type_name:
+		return node
+	for child in node.get_children():
+		var result = _find_node_by_type(child, type_name)
+		if result:
+			return result
+	return null
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -99,19 +120,22 @@ func _handle_left_click() -> void:
 
 func _process_idle(_delta: float) -> void:
 	velocity = velocity.move_toward(Vector2.ZERO, SPEED)
-	animated_sprite.play("idle")
+	animated_sprite.play("pain")
 	move_and_slide()
 
 func _process_projectile(delta: float) -> void:
 	var current_speed = velocity.length()
-	if current_speed < 50.0:
+	if current_speed < 100.0:
 		velocity = Vector2.ZERO
 		bounce_count = 0
 		_change_state(State.IDLE)
 		return
 
-	var new_speed = max(current_speed - PROJECTILE_DECELERATION * delta, 0.0)
-	velocity = velocity.normalized() * new_speed
+	# Only decelerate when below threshold speed
+	if current_speed < DECELERATION_THRESHOLD:
+		var new_speed = max(current_speed - PROJECTILE_DECELERATION * delta, 0.0)
+		velocity = velocity.normalized() * new_speed
+		
 	
 	var collision = move_and_collide(velocity * delta)
 	if collision:
@@ -146,6 +170,9 @@ func _process_tongue_extend(delta: float) -> void:
 	if tongue_line == null:
 		_change_state(State.IDLE)
 		return
+	
+	# Continue moving while tongue is out
+	move_and_slide()
 	
 	# 1. Increment Length
 	tongue_current_length += TONGUE_SPEED * delta
@@ -188,6 +215,9 @@ func _process_tongue_extend(delta: float) -> void:
 	_update_tongue_visual(tongue_tip_vector)
 
 func _process_tongue_latched(delta: float) -> void:
+	# Continue moving while latched
+	move_and_slide()
+	
 	# Just wait here for a few frames to let the player see the connection
 	latch_timer -= delta
 	
@@ -201,6 +231,9 @@ func _process_tongue_latched(delta: float) -> void:
 		_change_state(State.TONGUE_RETRACT)
 
 func _process_tongue_retract(delta: float) -> void:
+	# Continue moving while retracting
+	move_and_slide()
+	
 	var head_pos = global_position + HEAD_OFFSET
 	
 	if caught_prey != null and is_instance_valid(caught_prey):
@@ -229,13 +262,17 @@ func _change_state(new_state: State) -> void:
 	
 	match new_state:
 		State.IDLE:
-			animated_sprite.play("idle")
+			animated_sprite.play("pain")  # Pain animation loops when not stuck/projectile
 		State.PROJECTILE:
 			animated_sprite.play("bite")
 			animated_sprite.flip_h = false 
 		State.STUCK:
 			velocity = Vector2.ZERO
+			animated_sprite.play("idle")
+		State.TONGUE_EXTEND, State.TONGUE_RETRACT:
+			animated_sprite.play("pain")  # Pain animation during tongue usage
 		State.TONGUE_LATCHED:
+			animated_sprite.play("pain")
 			latch_timer = IMPACT_FREEZE_TIME
 
 func _launch_projectile() -> void:
@@ -251,10 +288,15 @@ func _launch_projectile() -> void:
 	var dir = (get_global_mouse_position() - global_position).normalized()
 	velocity = dir * PROJECTILE_SPEED
 	bounce_count = 0
+	
+	# Screen shake on launch
+	if camera and camera.has_method("trigger_shake"):
+		camera.trigger_shake()
+	
 	_change_state(State.PROJECTILE)
 	
 func _launch_tongue() -> void:
-	if current_state == State.PROJECTILE: velocity = Vector2.ZERO
+	# Don't stop velocity - keep moving while tongue is out
 	
 	# 1. FIX: Calculate direction from HEAD, not FEET
 	# This matches the math used in _update_trajectory_dots
@@ -269,9 +311,9 @@ func _launch_tongue() -> void:
 	if tongue_line:
 		tongue_line.visible = true
 		tongue_line.clear_points()
-		# Ensure the line visually starts at the head
-		tongue_line.add_point(HEAD_OFFSET) 
-		tongue_line.add_point(HEAD_OFFSET)
+		# Start at player center
+		tongue_line.add_point(Vector2.ZERO) 
+		tongue_line.add_point(Vector2.ZERO)
 		
 	_change_state(State.TONGUE_EXTEND)
 func _stick_to_prey(prey_node: Node2D) -> void:
@@ -348,8 +390,8 @@ func _flash_damage() -> void:
 func _update_tongue_visual(tongue_tip_local: Vector2) -> void:
 	if not tongue_line: return
 	tongue_line.clear_points()
-	tongue_line.add_point(HEAD_OFFSET)
-	tongue_line.add_point(HEAD_OFFSET + tongue_tip_local)
+	tongue_line.add_point(Vector2.ZERO)
+	tongue_line.add_point(tongue_tip_local)
 
 func _update_trajectory_dots() -> void:
 	if current_state != State.STUCK:

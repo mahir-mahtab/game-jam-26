@@ -18,6 +18,7 @@ var _spotlight_layer: CanvasLayer = null
 var _spotlight_rect: ColorRect = null
 
 func _ready() -> void:
+	add_to_group("camera")
 	_base_zoom = zoom
 	_setup_spotlight()
 
