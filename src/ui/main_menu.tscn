@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://dxpy6m1oawcb7"]
 
 [ext_resource type="Script" uid="uid://devxbh2ka7veq" path="res://src/ui/main_menu.gd" id="1_j3wvn"]
-[ext_resource type="Texture2D" uid="uid://clcqy8r51culw" path="res://src/ui/Gemini_Generated_Image_ldqc56ldqc56ldqc.png" id="2_f0s2b"]
+[ext_resource type="Texture2D" uid="uid://yst2c5lxngax" path="res://src/ui/AAAA.png" id="2_f0s2b"]
 [ext_resource type="FontFile" uid="uid://c1ilb8smhi4iu" path="res://src/ui/gam/04B_30__.TTF" id="3_5mgu5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
@@ -61,24 +61,8 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.08, 0.08, 1)
 
-[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="."]
-position = Vector2(573, 324.46918)
-scale = Vector2(0.2903226, 0.3016534)
-texture = ExtResource("2_f0s2b")
-
-[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="GeminiGeneratedImageLdqc56Ldqc56Ldqc"]
-position = Vector2(-1302, 11.704895)
-scale = Vector2(0.2903226, 0.3016534)
-texture = ExtResource("2_f0s2b")
-
-[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="GeminiGeneratedImageLdqc56Ldqc56Ldqc/GeminiGeneratedImageLdqc56Ldqc56Ldqc"]
-position = Vector2(-1302, 11.704895)
-scale = Vector2(0.2903226, 0.3016534)
-texture = ExtResource("2_f0s2b")
-
-[node name="GeminiGeneratedImageLdqc56Ldqc56Ldqc" type="Sprite2D" parent="GeminiGeneratedImageLdqc56Ldqc56Ldqc/GeminiGeneratedImageLdqc56Ldqc56Ldqc/GeminiGeneratedImageLdqc56Ldqc56Ldqc"]
-position = Vector2(-1302, 11.704895)
-scale = Vector2(0.2903226, 0.3016534)
+[node name="Aaaa" type="Sprite2D" parent="Background"]
+position = Vector2(524, 534)
 texture = ExtResource("2_f0s2b")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
