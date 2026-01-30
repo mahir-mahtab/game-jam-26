@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cmmsk68nt6d8c"]
+[gd_scene load_steps=14 format=3 uid="uid://cmmsk68nt6d8c"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_8rl7k"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_juem4"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="6_s7qur"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_gameover"]
+[ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="9_s7qur"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jja43"]
 texture = ExtResource("1_8rl7k")
@@ -169,6 +170,7 @@ visible = false
 scale = Vector2(0.25, 0.25)
 zoom = Vector2(2.6, 2.6)
 position_smoothing_enabled = true
+script = ExtResource("9_s7qur")
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_juem4")]
 position = Vector2(-159, 168)
