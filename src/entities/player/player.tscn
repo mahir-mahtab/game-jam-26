@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://1ikidv6e647h" path="res://assets/Units/Character/idle.png" id="3_0mfjg"]
 [ext_resource type="Texture2D" uid="uid://coihi8dfjnaaw" path="res://assets/Basic_red_dot.png" id="4_wrxq6"]
 [ext_resource type="AudioStream" uid="uid://coo20wxq0mu1u" path="res://assets/music/throw.mp3" id="6_eb65w"]
-[ext_resource type="AudioStream" uid="uid://d3p2owh1wsoav" path="res://assets/music/bite.mp3" id="7_4f0qm"]
+[ext_resource type="AudioStream" uid="uid://dks5fcm3ieak2" path="res://assets/music/crunch.mp3" id="7_eb65w"]
 [ext_resource type="AudioStream" uid="uid://85lcci70n77l" path="res://assets/music/bounce.mp3" id="8_tk761"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kc3pt"]
@@ -99,7 +99,7 @@ stream = ExtResource("6_eb65w")
 attenuation = 1.6817905
 
 [node name="BiteSound" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("7_4f0qm")
+stream = ExtResource("7_eb65w")
 
 [node name="BounceSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("8_tk761")

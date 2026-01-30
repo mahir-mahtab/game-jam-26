@@ -77,16 +77,16 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton or not event.pressed: return
-	match event.button_index:
-		MOUSE_BUTTON_LEFT: _handle_left_click()
-		MOUSE_BUTTON_RIGHT: _handle_right_click()
+	if event.button_index == MOUSE_BUTTON_LEFT:
+		_handle_left_click()
 
 # --- INPUT & STATE LOGIC ---
 func _handle_left_click() -> void:
-	if current_state == State.STUCK: _launch_projectile()
-
-func _handle_right_click() -> void:
-	if current_state in [State.IDLE, State.PROJECTILE]: _launch_tongue()
+	# Single button controls: left click does the available action
+	if current_state == State.STUCK:
+		_launch_projectile()
+	elif current_state in [State.IDLE, State.PROJECTILE]:
+		_launch_tongue()
 
 func _process_idle(_delta: float) -> void:
 	# No arrow key movement - player only moves via projectile launch

@@ -4,11 +4,11 @@
 [ext_resource type="Script" path="res://src/level/level_1.gd" id="1_mix2k"]
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="2_56b5l"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_drb1a"]
-[ext_resource type="Script" path="res://src/ui/gam/camera_2d.gd" id="3_kwi0t"]
+[ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="3_kwi0t"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="4_fawry"]
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="5_kwi0t"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="6_fawry"]
-[ext_resource type="PackedScene" uid="uid://c17yhxtuxhgae" path="res://src/level/level_exit.tscn" id="7_fawry"]
+[ext_resource type="PackedScene" path="res://src/level/level_exit.tscn" id="7_fawry"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jc6su"]
 texture = ExtResource("1_jbfrm")
@@ -133,13 +133,6 @@ layer_1/tile_data = PackedInt32Array(393221, 458752, 2, 393222, 393216, 2, 39322
 position = Vector2(192, 600)
 scale = Vector2(0.4, 0.4)
 
-[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
-position = Vector2(200, -200)
-scale = Vector2(2, 2)
-zoom = Vector2(2, 2)
-position_smoothing_enabled = true
-script = ExtResource("3_kwi0t")
-
 [node name="HUD" parent="." instance=ExtResource("4_fawry")]
 
 [node name="Breakingwall" parent="." instance=ExtResource("5_kwi0t")]
@@ -159,3 +152,10 @@ position = Vector2(541, 215)
 position = Vector2(551, 526)
 scale = Vector2(0.4, 0.4)
 next_level_scene = "uid://um56fitj1y4a"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(398, 384)
+scale = Vector2(0.8, 0.8)
+zoom = Vector2(1.3, 1.3)
+position_smoothing_enabled = true
+script = ExtResource("3_kwi0t")
