@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="7_ur1c0"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="8_jqvkt"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="9_bowi4"]
+[ext_resource type="Script" path="res://src/level/level_1.gd" id="10_level_script"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jja43"]
 texture = ExtResource("1_emyya")
@@ -115,6 +116,7 @@ physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_jja43")
 
 [node name="Level222" type="Node2D"]
+script = ExtResource("10_level_script")
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2(92, -67)

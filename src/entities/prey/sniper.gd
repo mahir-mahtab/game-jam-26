@@ -27,12 +27,19 @@ func _ready() -> void:
 	add_to_group("prey")
 	motion_mode = MOTION_MODE_FLOATING 
 	
-	player_ref = get_tree().get_first_node_in_group("player")
-	if not player_ref:
-		print("[ERROR] Sniper: Player not found!")
+	# Find player after scene tree is fully set up
+	call_deferred("_find_player")
 	
 	aim_timer.timeout.connect(_on_shoot)
 	if randf() > 0.5: direction = Vector2.LEFT
+
+
+func _find_player() -> void:
+	player_ref = get_tree().get_first_node_in_group("player")
+	if not player_ref:
+		# Try again next frame if player not found yet
+		await get_tree().process_frame
+		player_ref = get_tree().get_first_node_in_group("player")
 
 func _physics_process(_delta: float) -> void:
 	if is_zombified or being_pulled:

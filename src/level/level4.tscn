@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://vdrl6ug21uck"]
+[gd_scene load_steps=12 format=3 uid="uid://cj8j6yd5r2qml"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_jbfrm"]
 [ext_resource type="Script" path="res://src/level/level_1.gd" id="1_mix2k"]
