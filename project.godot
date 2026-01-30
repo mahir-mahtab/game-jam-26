@@ -23,6 +23,7 @@ Audio="*res://src/entities/music/audio.tscn"
 
 window/size/viewport_width=1024
 window/size/viewport_height=1152
+window/size/borderless=true
 window/stretch/mode="canvas_items"
 
 [input]
