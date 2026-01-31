@@ -284,7 +284,7 @@ func _process_tongue_retract(delta: float) -> void:
 
 # --- ACTIONS ---
 func _change_state(new_state: State) -> void:
-	var old_state = current_state
+	var _old_state = current_state
 	current_state = new_state
 	
 	match new_state:

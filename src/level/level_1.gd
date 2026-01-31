@@ -8,7 +8,7 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	# Assuming you have an input action named "reset" in your Project Settings
 	if Input.is_action_just_pressed("reset"):
 		reset_scene()

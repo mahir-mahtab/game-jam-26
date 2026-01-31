@@ -2,6 +2,8 @@ extends Area2D
 
 # This creates a file picker in the Inspector!
 @export_file("*.tscn") var next_level_scene: String
+# Set this to true if this exit should show the victory screen (for final level)
+@export var is_final_level: bool = false
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -43,16 +45,39 @@ func _on_animation_finished() -> void:
 	_start_transition()
 
 func _start_transition() -> void:
+	# Check if this is the final level - show victory screen instead
+	if is_final_level:
+		print("Final level completed - showing victory screen!")
+		_show_victory_screen()
+		return
+	
 	if next_level_scene == "":
 		print("Error: Next level scene is not set in the Inspector!")
 		return
 	
-	print("Loading next level with transition...")
-	
-	# Use TransitionManager for smooth transition
-	if TransitionManager:
-		await TransitionManager.circle_close(Vector2(0.5, 0.5), 0.6)
-		TransitionManager.set_fully_black()
-	
-	# Change scene
-	get_tree().change_scene_to_file(next_level_scene)
+	print("Level complete - showing transition screen...")
+	_show_transition_screen()
+
+func _show_transition_screen() -> void:
+	# Find the transition screen in the scene tree
+	var transition_screen = get_tree().get_first_node_in_group("transition_screen")
+	if transition_screen and transition_screen.has_method("show_transition"):
+		var current_level = get_tree().current_scene.scene_file_path
+		transition_screen.show_transition(current_level, next_level_scene)
+	else:
+		# Fallback: just load next level directly
+		print("Transition screen not found, loading next level directly...")
+		if TransitionManager:
+			await TransitionManager.circle_close(Vector2(0.5, 0.5), 0.6)
+			TransitionManager.set_fully_black()
+		get_tree().change_scene_to_file(next_level_scene)
+
+func _show_victory_screen() -> void:
+	# Find the victory screen in the scene tree
+	var victory_screen = get_tree().get_first_node_in_group("victory_screen")
+	if victory_screen and victory_screen.has_method("show_victory"):
+		victory_screen.show_victory()
+	else:
+		# Fallback: load victory screen scene directly
+		print("Victory screen not found in scene, loading directly...")
+		get_tree().change_scene_to_file("res://src/ui/victory_screen.tscn")
