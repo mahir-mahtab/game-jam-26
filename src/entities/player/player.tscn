@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cadnjm2kabw85"]
+[gd_scene load_steps=34 format=3 uid="uid://cadnjm2kabw85"]
 
 [ext_resource type="Script" uid="uid://bh6dqam4yrryn" path="res://src/entities/player/player.gd" id="1_vt6n5"]
 [ext_resource type="PackedScene" uid="uid://bep8xu7ik74xm" path="res://src/entities/deadbody/deadbody.tscn" id="2_0mfjg"]
@@ -10,6 +10,13 @@
 [ext_resource type="AudioStream" uid="uid://coo20wxq0mu1u" path="res://assets/music/throw.mp3" id="6_eb65w"]
 [ext_resource type="AudioStream" uid="uid://dks5fcm3ieak2" path="res://assets/music/crunch.mp3" id="7_eb65w"]
 [ext_resource type="AudioStream" uid="uid://85lcci70n77l" path="res://assets/music/bounce.mp3" id="8_tk761"]
+[ext_resource type="Shader" path="res://src/entities/player/player_shadow.gdshader" id="9_shadow"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]
+shader = ExtResource("9_shadow")
+shader_parameter/shadow_color = Color(0.0, 0.0, 0.0, 0.5)
+shader_parameter/shadow_offset = Vector2(4.0, 6.0)
+shader_parameter/shadow_blur = 2.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kc3pt"]
 atlas = ExtResource("2_ketdh")
@@ -177,6 +184,7 @@ script = ExtResource("1_vt6n5")
 dead_body_scene = ExtResource("2_0mfjg")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_shadow")
 position = Vector2(4, -58)
 scale = Vector2(0.105, 0.1)
 sprite_frames = SubResource("SpriteFrames_eb65w")

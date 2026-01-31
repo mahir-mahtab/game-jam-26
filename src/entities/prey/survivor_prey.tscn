@@ -1,7 +1,15 @@
-[gd_scene load_steps=13 format=3 uid="uid://hqwi2uw63d4r"]
+[gd_scene load_steps=15 format=3 uid="uid://hqwi2uw63d4r"]
 
 [ext_resource type="Script" uid="uid://crdco0r41uy5p" path="res://src/entities/prey/survivor.gd" id="1_i0vdp"]
 [ext_resource type="Texture2D" uid="uid://ch238dn7c8c5k" path="res://assets/Units/enemy/enemy.png" id="2_i0vdp"]
+[ext_resource type="Shader" path="res://src/entities/prey/prey_glow.gdshader" id="3_glow"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glow"]
+shader = ExtResource("3_glow")
+shader_parameter/glow_color = Color(1.0, 0.3, 0.3, 1.0)
+shader_parameter/glow_size = 5.0
+shader_parameter/glow_intensity = 2.5
+shader_parameter/pulse_speed = 2.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8nqno"]
 atlas = ExtResource("2_i0vdp")
@@ -86,6 +94,7 @@ collision_layer = 2
 script = ExtResource("1_i0vdp")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_glow")
 scale = Vector2(0.1, 0.1)
 sprite_frames = SubResource("SpriteFrames_0s2jd")
 animation = &"new_animation_1"

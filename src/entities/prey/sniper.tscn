@@ -53,7 +53,8 @@ position = Vector2(20, 0)
 target_position = Vector2(0, 20)
 
 [node name="LaserSight" type="Line2D" parent="."]
-points = PackedVector2Array(4, -38)
+visible = false
+default_color = Color(1, 0, 0, 1)
 width = 2.0
 
 [node name="AimTimer" type="Timer" parent="."]

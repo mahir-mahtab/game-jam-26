@@ -6,9 +6,13 @@ extends CharacterBody2D
 @export var laser_damage: float = 10.0  # Reduced damage for more frequent hits
 @export var aim_time: float = 0.8  # Time before shooting (faster)
 
+# Offset from center to the "eye" or "gun" position for raycasting
+const LASER_ORIGIN_OFFSET := Vector2(0, -20)  # Sprite is offset upward
+
 # --- STATE ---
 enum { PATROL, AIM }
 var current_state = PATROL
+var direction_change_cooldown: float = 0.0  # Prevents rapid direction flipping
 var direction = Vector2.RIGHT
 
 # Shared Variables
@@ -58,10 +62,19 @@ func _physics_process(_delta: float) -> void:
 	move_and_slide()
 
 func _process_patrol() -> void:
+	# Update cooldown timer
+	if direction_change_cooldown > 0:
+		direction_change_cooldown -= get_physics_process_delta_time()
+	
+	# Set wall check direction
 	wall_check.target_position = direction * 35.0
-	if wall_check.is_colliding() or is_on_wall():
-		direction *= -1
-		wall_check.force_raycast_update()
+	
+	# Only flip direction if cooldown has expired
+	if direction_change_cooldown <= 0:
+		if wall_check.is_colliding() or is_on_wall():
+			direction *= -1
+			direction_change_cooldown = 0.3  # Prevent flipping again for 0.3 seconds
+			wall_check.force_raycast_update()
 	
 	velocity = direction * patrol_speed
 	animated_sprite.flip_h = (direction.x < 0)
@@ -114,9 +127,9 @@ func _process_aim() -> void:
 		_cancel_aim()
 		return
 	
-	# If clear, update Visuals
+	# If clear, update Visuals - draw from laser origin offset to player
 	laser_line.clear_points()
-	laser_line.add_point(Vector2.ZERO)
+	laser_line.add_point(LASER_ORIGIN_OFFSET)
 	laser_line.add_point(to_local(player_ref.global_position))
 
 func _on_shoot() -> void:
@@ -147,14 +160,21 @@ func _cancel_aim() -> void:
 
 # Helper: Consolidates raycast logic so aimed shots and vision are identical
 func _create_smart_query(target_pos: Vector2) -> PhysicsRayQueryParameters2D:
-	var start_pos = global_position + (direction * 30.0)
+	# Use a fixed offset from sprite origin, NOT based on patrol direction
+	# This ensures consistent detection regardless of which way sniper is facing
+	var start_pos = global_position + LASER_ORIGIN_OFFSET
 	var query = PhysicsRayQueryParameters2D.create(start_pos, target_pos)
 	
+	# Exclude self and all children from raycast
 	var exceptions = [get_rid()]
 	for child in get_children():
 		if child is CollisionObject2D:
 			exceptions.append(child.get_rid())
 	query.exclude = exceptions
+	
+	# Prevent false detections from Area2D triggers
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
 	return query
 
 func set_pulled_state(pulled: bool) -> void: being_pulled = pulled
