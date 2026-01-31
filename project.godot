@@ -22,8 +22,8 @@ TransitionManager="*res://src/ui/transition_manager.gd"
 
 [display]
 
-window/size/viewport_width=1024
-window/size/viewport_height=1152
+window/size/viewport_width=819
+window/size/viewport_height=922
 window/size/borderless=true
 window/stretch/mode="canvas_items"
 

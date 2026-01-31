@@ -1438,14 +1438,15 @@ grow_vertical = 2
 color = Color(0.08, 0.08, 0.08, 1)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Background"]
-position = Vector2(512, 576.5)
-scale = Vector2(1.5875, 1.7953125)
+position = Vector2(410.5, 464.99997)
+scale = Vector2(1.2703124, 1.4468749)
 sprite_frames = SubResource("SpriteFrames_h3whu")
 autoplay = "default"
-frame_progress = 0.9391713
+frame_progress = 0.27189302
 
 [node name="Aaaa" type="Sprite2D" parent="."]
-position = Vector2(526, 619)
+position = Vector2(410.5, 479)
+scale = Vector2(0.77441406, 0.7569444)
 texture = ExtResource("2_f0s2b")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]

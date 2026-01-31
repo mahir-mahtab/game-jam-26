@@ -74,17 +74,18 @@ func _check_for_player() -> void:
 	var dist = global_position.distance_to(player_ref.global_position)
 	if dist > sight_range: return
 	
-	# 2. FOV Check (In front?)
-	var to_player = (player_ref.global_position - global_position).normalized()
-	if direction.dot(to_player) < 0: return 
-	
-	# 3. Wall Check (Raycast)
+	# 2. Wall Check (Raycast) - removed FOV check for top-down game
 	var space = get_world_2d().direct_space_state
 	var query = _create_smart_query(player_ref.global_position)
 	var result = space.intersect_ray(query)
 	
 	# Only aim if we hit the player (not a wall)
 	if result and result.collider == player_ref:
+		# Update facing direction toward player
+		var to_player = (player_ref.global_position - global_position)
+		if abs(to_player.x) > abs(to_player.y):
+			direction = Vector2.RIGHT if to_player.x > 0 else Vector2.LEFT
+		animated_sprite.flip_h = (to_player.x < 0)
 		_start_aiming()
 
 func _start_aiming() -> void:

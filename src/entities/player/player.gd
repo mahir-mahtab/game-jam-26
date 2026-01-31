@@ -192,7 +192,18 @@ func _process_tongue_extend(delta: float) -> void:
 	
 	var result = space_state.intersect_ray(query)
 	
-	# 3. Update Visuals BEFORE state change ensures the frame is drawn
+	# 3. Check for nearby prey even if ray missed (wider hitbox)
+	if not result or (result and not result.collider.is_in_group("prey")):
+		var nearby_prey = _find_nearby_prey(ray_end, 40.0)  # 40 pixel radius
+		if nearby_prey:
+			# Snap to prey position
+			tongue_current_length = head_pos.distance_to(nearby_prey.global_position)
+			tongue_tip_vector = tongue_direction * tongue_current_length
+			_update_tongue_visual(tongue_tip_vector)
+			_catch_prey(nearby_prey as CharacterBody2D)
+			return
+	
+	# 4. Update Visuals BEFORE state change ensures the frame is drawn
 	if result:
 		# Snap length to hit position
 		tongue_current_length = head_pos.distance_to(result.position)
@@ -213,6 +224,22 @@ func _process_tongue_extend(delta: float) -> void:
 		_change_state(State.TONGUE_RETRACT)
 		
 	_update_tongue_visual(tongue_tip_vector)
+
+
+func _find_nearby_prey(center: Vector2, radius: float) -> Node2D:
+	# Check all prey and find closest within radius
+	var preys = get_tree().get_nodes_in_group("prey")
+	var closest_prey: Node2D = null
+	var closest_dist: float = radius
+	
+	for p in preys:
+		if p is CharacterBody2D:
+			var dist = p.global_position.distance_to(center)
+			if dist < closest_dist:
+				closest_dist = dist
+				closest_prey = p
+	
+	return closest_prey
 
 func _process_tongue_latched(delta: float) -> void:
 	# Continue moving while latched

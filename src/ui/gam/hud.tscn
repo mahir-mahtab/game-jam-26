@@ -1,9 +1,43 @@
-[gd_scene load_steps=2 format=3 uid="uid://ccsr1ysos1n71"]
+[gd_scene load_steps=4 format=3 uid="uid://ccsr1ysos1n71"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 
+[sub_resource type="Shader" id="Shader_vignette"]
+code = "shader_type canvas_item;
+
+uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 pain_color : source_color = vec4(0.8, 0.0, 0.0, 1.0);
+
+void fragment() {
+	vec2 uv = UV;
+	vec2 center = vec2(0.5, 0.5);
+	float dist = distance(uv, center);
+	
+	// Create vignette shape (edges darker)
+	float vignette = smoothstep(0.2, 0.8, dist);
+	
+	// Apply pain effect with intensity
+	float alpha = vignette * intensity * 0.8;
+	COLOR = vec4(pain_color.rgb, alpha);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vignette"]
+shader = SubResource("Shader_vignette")
+shader_parameter/intensity = 0.0
+shader_parameter/pain_color = Color(0.8, 0, 0, 1)
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
+
+[node name="PainVignette" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_vignette")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 10
@@ -53,6 +87,14 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="MarginContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "Restart (R)"
+
 
 [node name="ExitArrowContainer" type="Control" parent="."]
 anchors_preset = 2

@@ -6,21 +6,28 @@ extends CanvasLayer
 @onready var health_label: Label = $MarginContainer/VBoxContainer/HealthBar/HealthLabel
 @onready var exit_arrow: Polygon2D = $ExitArrowContainer/Arrow
 @onready var exit_arrow_container: Control = $ExitArrowContainer
+@onready var pain_vignette: ColorRect = $PainVignette
+@onready var restart_button: Button = $MarginContainer/RestartButton
 
 var player: CharacterBody2D = null
 var level_exit: Node2D = null
 var _original_health_bar_color: Color
+var _pain_pulse_time: float = 0.0
 
 func _ready() -> void:
 	player = _find_player()
 	level_exit = _find_level_exit()
 	_update_display()
 	_connect_player_signals()
+	
+	if restart_button:
+		restart_button.pressed.connect(_on_restart_pressed)
+	
 	# Store original health bar color
 	if health_bar:
 		_original_health_bar_color = health_bar.modulate
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if player == null or not is_instance_valid(player):
 		player = _find_player()
 		_connect_player_signals()
@@ -28,6 +35,7 @@ func _process(_delta: float) -> void:
 		level_exit = _find_level_exit()
 	_update_display()
 	_update_exit_arrow()
+	_update_pain_vignette(delta)
 
 func _connect_player_signals() -> void:
 	if player and player.has_signal("damage_taken"):
@@ -40,6 +48,45 @@ func _on_player_damaged() -> void:
 		health_bar.modulate = Color(2.0, 0.2, 0.2, 1.0)  # Bright red
 		var tween = create_tween()
 		tween.tween_property(health_bar, "modulate", _original_health_bar_color, 0.4)
+	
+	# Flash pain vignette on damage
+	if pain_vignette and pain_vignette.material:
+		pain_vignette.material.set_shader_parameter("intensity", 1.0)
+
+func _on_restart_pressed() -> void:
+	get_tree().reload_current_scene()
+
+
+func _update_pain_vignette(delta: float) -> void:
+	if pain_vignette == null or pain_vignette.material == null:
+		return
+	if player == null or not is_instance_valid(player):
+		pain_vignette.material.set_shader_parameter("intensity", 0.0)
+		return
+	
+	if not player.has_method("get_health") or not player.has_method("get_max_health"):
+		return
+	
+	var health_percent = float(player.get_health()) / float(player.get_max_health())
+	
+	# Calculate base intensity (higher when health is lower)
+	var base_intensity = clamp(1.0 - health_percent, 0.0, 1.0)
+	
+	# Add pulsing effect when critically low (below 30%)
+	var pulse_intensity = 0.0
+	if health_percent < 0.3:
+		_pain_pulse_time += delta * 4.0  # Pulse speed
+		pulse_intensity = sin(_pain_pulse_time) * 0.15
+	
+	# Get current intensity and smoothly transition
+	var current = pain_vignette.material.get_shader_parameter("intensity")
+	var target = clamp(base_intensity * 0.7 + pulse_intensity, 0.0, 1.0)
+	
+	# Smooth transition (faster fade in, slower fade out)
+	var speed = 8.0 if target > current else 3.0
+	var new_intensity = move_toward(current, target, delta * speed)
+	
+	pain_vignette.material.set_shader_parameter("intensity", new_intensity)
 
 func _find_player() -> CharacterBody2D:
 	var scene = get_tree().get_current_scene()

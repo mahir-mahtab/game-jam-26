@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="6_s7qur"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_gameover"]
+[ext_resource type="Script" path="res://src/level/level_1.gd" id="9_level_script"]
+[ext_resource type="Script" path="res://src/ui/gam/camera_2d.gd" id="10_camera_script"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jja43"]
 texture = ExtResource("1_8rl7k")
@@ -126,7 +128,8 @@ texture = ExtResource("1_8rl7k")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_jja43")
 
-[node name="Level222" type="Node2D"]
+[node name="Level223" type="Node2D"]
+script = ExtResource("9_level_script")
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2(92, -67)
@@ -142,7 +145,7 @@ layer_2/tile_data = PackedInt32Array(-262141, 196608, 1, -196605, 196608, 1, -32
 position = Vector2(-84, 68)
 
 [node name="sniper" parent="." instance=ExtResource("3_wf1ds")]
-position = Vector2(51, 196)
+position = Vector2(41, 161)
 
 [node name="survivor2" parent="." instance=ExtResource("6_nnkhl")]
 position = Vector2(-110, -45)
@@ -151,7 +154,7 @@ position = Vector2(-110, -45)
 position = Vector2(141, -101)
 rotation = 1.5812683
 scale = Vector2(0.4, 0.4)
-next_level_scene = "res://src/level/level3.tscn"
+next_level_scene = "res://src/level/level4.tscn"
 
 [node name="Breakingwall" parent="." instance=ExtResource("6_s7qur")]
 position = Vector2(421.99997, 30.999985)
@@ -167,8 +170,9 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 scale = Vector2(0.25, 0.25)
-zoom = Vector2(2.6, 2.6)
+zoom = Vector2(2.1, 2.1)
 position_smoothing_enabled = true
+script = ExtResource("10_camera_script")
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_juem4")]
 position = Vector2(-159, 168)

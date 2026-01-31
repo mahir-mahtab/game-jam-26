@@ -1,10 +1,47 @@
-[gd_scene load_steps=4 format=3 uid="uid://c17yhxtuxhgae"]
+[gd_scene load_steps=10 format=3 uid="uid://k8wkvygnxpjt"]
 
 [ext_resource type="Script" uid="uid://cxxs46jn8o8s7" path="res://src/level/level_exit.gd" id="1_j556y"]
 [ext_resource type="Texture2D" uid="uid://xly7m7o55cga" path="res://assets/doubleDoor.png" id="2_pgf57"]
+[ext_resource type="Texture2D" uid="uid://d2tuda3khjd83" path="res://assets/gate.png" id="3_uoes5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_whe5f"]
-size = Vector2(165, 109)
+size = Vector2(99, 93)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xwbxe"]
+atlas = ExtResource("3_uoes5")
+region = Rect2(32, 406, 683, 744)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mmxic"]
+atlas = ExtResource("3_uoes5")
+region = Rect2(715, 406, 683, 744)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jp7ii"]
+atlas = ExtResource("3_uoes5")
+region = Rect2(1398, 406, 683, 744)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kgtir"]
+atlas = ExtResource("3_uoes5")
+region = Rect2(2081, 406, 683, 744)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_34gej"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xwbxe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mmxic")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jp7ii")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kgtir")
+}],
+"loop": false,
+"name": &"default",
+"speed": 4.0
+}]
 
 [node name="levelExit" type="Area2D"]
 script = ExtResource("1_j556y")
@@ -12,12 +49,19 @@ script = ExtResource("1_j556y")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
 [node name="triggerZone" type="CollisionShape2D" parent="."]
-position = Vector2(-1.5, 1.5)
+position = Vector2(3, 0)
 shape = SubResource("RectangleShape2D_whe5f")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
+visible = false
 position = Vector2(-0.9999962, 1.0000001)
 scale = Vector2(1.5892859, 1.0178571)
 texture = ExtResource("2_pgf57")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-1.5, 1.5)
+scale = Vector2(0.13909222, 0.13909219)
+sprite_frames = SubResource("SpriteFrames_34gej")
+frame_progress = 0.086322695
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
