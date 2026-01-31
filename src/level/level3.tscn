@@ -1,17 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://cmmsk68nt6d8c"]
+[gd_scene load_steps=15 format=3 uid="uid://cmmsk68nt6d8c"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_8rl7k"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_juem4"]
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="2_okjf2"]
 [ext_resource type="PackedScene" uid="uid://cuguknml1tb1x" path="res://src/entities/prey/sniper.tscn" id="3_wf1ds"]
 [ext_resource type="PackedScene" uid="uid://cu84teg8odtc4" path="res://src/entities/prey/riot_guard.tscn" id="4_rhgx4"]
-[ext_resource type="PackedScene" path="res://src/level/level_exit.tscn" id="5_rhgx4"]
+[ext_resource type="PackedScene" uid="uid://k8wkvygnxpjt" path="res://src/level/level_exit.tscn" id="5_rhgx4"]
 [ext_resource type="PackedScene" uid="uid://hqwi2uw63d4r" path="res://src/entities/prey/survivor_prey.tscn" id="6_nnkhl"]
 [ext_resource type="PackedScene" uid="uid://bu6rppmbfl8kf" path="res://src/entities/breaking block/breakingwall.tscn" id="6_s7qur"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_gameover"]
-[ext_resource type="Script" path="res://src/level/level_1.gd" id="9_level_script"]
-[ext_resource type="Script" path="res://src/ui/gam/camera_2d.gd" id="10_camera_script"]
+[ext_resource type="Script" uid="uid://d0k33necvtl1q" path="res://src/level/level_1.gd" id="9_level_script"]
+[ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="10_camera_script"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jja43"]
 texture = ExtResource("1_8rl7k")
@@ -145,7 +145,7 @@ layer_2/tile_data = PackedInt32Array(-262141, 196608, 1, -196605, 196608, 1, -32
 position = Vector2(-84, 68)
 
 [node name="sniper" parent="." instance=ExtResource("3_wf1ds")]
-position = Vector2(41, 161)
+position = Vector2(40, 154)
 
 [node name="survivor2" parent="." instance=ExtResource("6_nnkhl")]
 position = Vector2(-110, -45)
@@ -176,9 +176,6 @@ script = ExtResource("10_camera_script")
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_juem4")]
 position = Vector2(-159, 168)
-
-[node name="Prey4" parent="." instance=ExtResource("2_okjf2")]
-position = Vector2(-347, -93)
 
 [node name="riot_guard" parent="." instance=ExtResource("4_rhgx4")]
 position = Vector2(-143, -149)

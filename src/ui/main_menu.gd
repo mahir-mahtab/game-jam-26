@@ -6,17 +6,22 @@ extends Control
 # Path to your main game scene (update this when you create it)
 const GAME_SCENE_PATH = "res://src/level/level1.tscn"
 const INTRO_VIDEO_PATH = "res://src/ui/intro.ogv"
+const TUTORIAL_IMAGE_PATH = "res://src/ui/tutorial.png"
 
 @onready var menu_options = $MarginContainer/VBoxContainer/MenuOptions
 @onready var play_button = $MarginContainer/VBoxContainer/MenuOptions/PlayButton
-@onready var options_button = $MarginContainer/VBoxContainer/MenuOptions/OptionsButton
-@onready var credits_button = $MarginContainer/VBoxContainer/MenuOptions/CreditsButton
+@onready var tutorial_button = $MarginContainer/VBoxContainer/MenuOptions/PlayButton2
 @onready var quit_button = $MarginContainer/VBoxContainer/MenuOptions/QuitButton
 
 # Video player components
 var video_container: ColorRect
 var video_player: VideoStreamPlayer
 var saved_bus_volumes: Dictionary = {}
+
+# Tutorial overlay components
+var tutorial_container: ColorRect
+var tutorial_image: TextureRect
+var tutorial_back_button: Button
 
 func _ready():
 	# Initial state for animation
@@ -37,6 +42,13 @@ func _ready():
 	
 	# Setup video player (hidden by default)
 	_setup_video_player()
+	
+	# Setup tutorial overlay (hidden by default)
+	_setup_tutorial_overlay()
+	
+	# Connect tutorial button
+	if tutorial_button:
+		tutorial_button.pressed.connect(_on_tutorial_button_pressed)
 
 
 func _setup_video_player() -> void:
@@ -63,6 +75,55 @@ func _setup_video_player() -> void:
 		video_player.stream = video_stream
 	else:
 		push_warning("Failed to load intro video: " + INTRO_VIDEO_PATH)
+
+
+func _setup_tutorial_overlay() -> void:
+	# Create a full-screen dark background
+	tutorial_container = ColorRect.new()
+	tutorial_container.name = "TutorialContainer"
+	tutorial_container.color = Color(0, 0, 0, 0.95)
+	tutorial_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	tutorial_container.visible = false
+	tutorial_container.z_index = 101  # On top of everything including video
+	add_child(tutorial_container)
+	
+	# Create the tutorial image
+	tutorial_image = TextureRect.new()
+	tutorial_image.name = "TutorialImage"
+	tutorial_image.set_anchors_preset(Control.PRESET_FULL_RECT)
+	tutorial_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tutorial_container.add_child(tutorial_image)
+	
+	# Load the tutorial image
+	var tutorial_texture = load(TUTORIAL_IMAGE_PATH)
+	if tutorial_texture:
+		tutorial_image.texture = tutorial_texture
+	else:
+		push_warning("Failed to load tutorial image: " + TUTORIAL_IMAGE_PATH)
+	
+	# Create the back button
+	tutorial_back_button = Button.new()
+	tutorial_back_button.name = "BackButton"
+	tutorial_back_button.text = "BACK"
+	tutorial_back_button.custom_minimum_size = Vector2(150, 50)
+	tutorial_back_button.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	tutorial_back_button.position = Vector2(-75, -80)  # Center horizontally, 80px from bottom
+	tutorial_back_button.pressed.connect(_on_tutorial_back_pressed)
+	tutorial_container.add_child(tutorial_back_button)
+
+
+func _on_tutorial_button_pressed() -> void:
+	# Show tutorial overlay and hide menu
+	$MarginContainer.visible = false
+	tutorial_container.visible = true
+	tutorial_back_button.grab_focus()
+
+
+func _on_tutorial_back_pressed() -> void:
+	# Hide tutorial overlay and show menu
+	tutorial_container.visible = false
+	$MarginContainer.visible = true
+	play_button.grab_focus()
 
 
 func _on_play_button_pressed():
@@ -135,18 +196,6 @@ func _start_game() -> void:
 		# Show menu again if game scene doesn't exist
 		$MarginContainer.visible = true
 		video_container.visible = false
-
-
-func _on_options_button_pressed():
-	# TODO: Implement options menu
-	print("Options menu - not implemented yet")
-	# Example: get_tree().change_scene_to_file("res://src/ui/options_menu.tscn")
-
-
-func _on_credits_button_pressed():
-	# TODO: Implement credits screen
-	print("Credits screen - not implemented yet")
-	# Example: get_tree().change_scene_to_file("res://src/ui/credits.tscn")
 
 
 func _on_quit_button_pressed():

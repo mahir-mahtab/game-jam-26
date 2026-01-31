@@ -23,6 +23,9 @@ func _on_body_entered(body: Node2D) -> void:
 		# Stop the player
 		if body is CharacterBody2D:
 			body.velocity = Vector2.ZERO
+			# Stop health decay during level exit
+			if "freeze_health_decay" in body:
+				body.freeze_health_decay = true
 			# Also try to reset player state if method exists
 			if body.has_method("freeze_for_exit"):
 				body.freeze_for_exit()

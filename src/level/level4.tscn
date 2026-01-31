@@ -151,7 +151,7 @@ position = Vector2(541, 215)
 [node name="levelExit" parent="." instance=ExtResource("7_fawry")]
 position = Vector2(551, 526)
 scale = Vector2(0.4, 0.4)
-next_level_scene = "res://src/ui/main_menu.tscn"
+next_level_scene = "res://src/ui/ending_screen.tscn"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(398, 384)

@@ -66,6 +66,7 @@ var tongue_direction := Vector2.ZERO
 var tongue_current_length := 0.0
 var caught_prey: CharacterBody2D = null
 var latch_timer: float = 0.0
+var freeze_health_decay: bool = false  # Set to true when level exit is triggered
 
 func _ready() -> void:
 	add_to_group("player")
@@ -390,6 +391,7 @@ func _finish_tongue() -> void:
 # --- HELPERS ---
 func _update_health(delta: float) -> void:
 	if current_state == State.STUCK or current_state == State.PROJECTILE: return
+	if freeze_health_decay: return  # Don't decay health during level exit
 	health = max(health - HEALTH_DECAY_PER_SEC * delta, 0.0)
 	if health <= 0:
 		die()

@@ -70,11 +70,7 @@ func _process_patrol() -> void:
 func _check_for_player() -> void:
 	if not player_ref: return
 	
-	# 1. Distance Check
-	var dist = global_position.distance_to(player_ref.global_position)
-	if dist > sight_range: return
-	
-	# 2. Wall Check (Raycast) - removed FOV check for top-down game
+	# Wall Check (Raycast) - no distance or FOV limit, can shoot from anywhere
 	var space = get_world_2d().direct_space_state
 	var query = _create_smart_query(player_ref.global_position)
 	var result = space.intersect_ray(query)
@@ -100,16 +96,15 @@ func _process_aim() -> void:
 	if not player_ref:
 		_cancel_aim()
 		return
-		
-	# --- NEW: BREAK LOCK LOGIC ---
 	
-	# 1. Check if player ran behind us (Out of FOV)
 	var to_player = (player_ref.global_position - global_position).normalized()
-	if direction.dot(to_player) < 0:
-		_cancel_aim()
-		return
+	
+	# Update facing direction to always track player (360 degree vision)
+	if abs(to_player.x) > abs(to_player.y):
+		direction = Vector2.RIGHT if to_player.x > 0 else Vector2.LEFT
+	animated_sprite.flip_h = (to_player.x < 0)
 
-	# 2. Check if a wall is now in the way
+	# Check if a wall is now in the way
 	var space = get_world_2d().direct_space_state
 	var query = _create_smart_query(player_ref.global_position)
 	var result = space.intersect_ray(query)
@@ -119,7 +114,7 @@ func _process_aim() -> void:
 		_cancel_aim()
 		return
 	
-	# 3. If clear, update Visuals
+	# If clear, update Visuals
 	laser_line.clear_points()
 	laser_line.add_point(Vector2.ZERO)
 	laser_line.add_point(to_local(player_ref.global_position))
