@@ -62,8 +62,7 @@ func _show_transition_screen() -> void:
 	# Find the transition screen in the scene tree
 	var transition_screen = get_tree().get_first_node_in_group("transition_screen")
 	if transition_screen and transition_screen.has_method("show_transition"):
-		var current_level = get_tree().current_scene.scene_file_path
-		transition_screen.show_transition(current_level, next_level_scene)
+		transition_screen.show_transition()
 	else:
 		# Fallback: just load next level directly
 		print("Transition screen not found, loading next level directly...")
