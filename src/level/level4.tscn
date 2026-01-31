@@ -152,6 +152,7 @@ position = Vector2(541, 215)
 position = Vector2(551, 526)
 scale = Vector2(0.4, 0.4)
 next_level_scene = "res://src/ui/ending_screen.tscn"
+skip_transition = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(398, 384)

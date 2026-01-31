@@ -2,6 +2,7 @@ extends Area2D
 
 # This creates a file picker in the Inspector!
 @export_file("*.tscn") var next_level_scene: String
+@export var skip_transition: bool = false  # Set to true to skip the circle transition
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -50,10 +51,10 @@ func _start_transition() -> void:
 		print("Error: Next level scene is not set in the Inspector!")
 		return
 	
-	print("Loading next level with transition...")
+	print("Loading next level...")
 	
-	# Use TransitionManager for smooth transition
-	if TransitionManager:
+	# Use TransitionManager for smooth transition (unless skipped)
+	if not skip_transition and TransitionManager:
 		await TransitionManager.circle_close(Vector2(0.5, 0.5), 0.6)
 		TransitionManager.set_fully_black()
 	

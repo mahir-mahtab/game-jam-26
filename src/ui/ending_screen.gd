@@ -14,19 +14,14 @@ func _ready() -> void:
 	# Make sure the control fills the screen
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	
-	# Create a black background
-	var bg = ColorRect.new()
-	bg.name = "Background"
-	bg.color = Color.BLACK
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.size = get_viewport_rect().size
-	add_child(bg)
-	
-	# Create the video player
+	# Create the video player directly (it will show black when no frame is visible anyway)
 	video_player = VideoStreamPlayer.new()
 	video_player.name = "EndingVideoPlayer"
 	video_player.set_anchors_preset(Control.PRESET_FULL_RECT)
-	video_player.size = get_viewport_rect().size
+	video_player.anchor_right = 1.0
+	video_player.anchor_bottom = 1.0
+	video_player.offset_right = 0
+	video_player.offset_bottom = 0
 	video_player.expand = true
 	video_player.finished.connect(_on_video_finished)
 	add_child(video_player)
@@ -38,7 +33,7 @@ func _ready() -> void:
 		video_player.stream = video_stream
 		# Start playing
 		video_player.play()
-		print("Video playback started")
+		print("Video playback started, is_playing: ", video_player.is_playing())
 	else:
 		push_error("Failed to load ending video: " + ENDING_VIDEO_PATH)
 		# If video doesn't exist, go to main menu after a brief delay
@@ -48,15 +43,7 @@ func _ready() -> void:
 
 func _on_video_finished() -> void:
 	print("Ending video finished!")
-	# Pause on last frame briefly
-	video_player.paused = true
-	
-	# Play circle close animation if TransitionManager exists
-	if TransitionManager:
-		await TransitionManager.circle_close(Vector2(0.5, 0.5), 0.8)
-		TransitionManager.set_fully_black()
-	
-	# Go to main menu
+	# Go directly to main menu (no transition)
 	_go_to_main_menu()
 
 
