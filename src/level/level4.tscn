@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cj8j6yd5r2qml"]
+[gd_scene load_steps=14 format=3 uid="uid://cj8j6yd5r2qml"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_jbfrm"]
 [ext_resource type="Script" uid="uid://d0k33necvtl1q" path="res://src/level/level_1.gd" id="1_mix2k"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bo0u0g8i0eh04" path="res://src/entities/prey/prey.tscn" id="6_fawry"]
 [ext_resource type="PackedScene" uid="uid://k8wkvygnxpjt" path="res://src/level/level_exit.tscn" id="7_fawry"]
 [ext_resource type="PackedScene" uid="uid://cuguknml1tb1x" path="res://src/entities/prey/sniper.tscn" id="10_3hcft"]
+[ext_resource type="PackedScene" path="res://src/effects/firefly_overlay.tscn" id="11_firefly"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jc6su"]
 texture = ExtResource("1_jbfrm")
@@ -179,3 +180,5 @@ position = Vector2(113, 395)
 
 [node name="sniper6" parent="." instance=ExtResource("10_3hcft")]
 position = Vector2(607, 358)
+
+[node name="FireflyOverlay" parent="." instance=ExtResource("11_firefly")]

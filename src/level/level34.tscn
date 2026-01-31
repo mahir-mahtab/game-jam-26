@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://26aenoryw2hq"]
+[gd_scene load_steps=12 format=3 uid="uid://26aenoryw2hq"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_8rl7k"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_juem4"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://hqwi2uw63d4r" path="res://src/entities/prey/survivor_prey.tscn" id="6_nnkhl"]
 [ext_resource type="PackedScene" uid="uid://ccsr1ysos1n71" path="res://src/ui/gam/hud.tscn" id="7_hud"]
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_gameover"]
+[ext_resource type="PackedScene" path="res://src/effects/firefly_overlay.tscn" id="9_firefly"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e0smm"]
 texture = ExtResource("1_8rl7k")
@@ -156,3 +157,5 @@ scale = Vector2(0.9, 0.9)
 [node name="HUD" parent="." instance=ExtResource("7_hud")]
 
 [node name="GameOverScreen" parent="." groups=["ui"] instance=ExtResource("8_gameover")]
+
+[node name="FireflyOverlay" parent="." instance=ExtResource("9_firefly")]

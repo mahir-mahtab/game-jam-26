@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://dyheky6ceu1in"]
+
+[ext_resource type="Script" uid="uid://7cuk148rf6fu" path="res://src/effects/firefly_overlay.gd" id="1_firefly_script"]
+
+[node name="FireflyOverlay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_firefly_script")
+firefly_count = 45
+base_speed = 18.0
+speed_variation = 12.0
+wobble_amount = 25.0
+glow_intensity = 6.5

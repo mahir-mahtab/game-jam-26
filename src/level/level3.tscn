@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cmmsk68nt6d8c"]
+[gd_scene load_steps=16 format=3 uid="uid://cmmsk68nt6d8c"]
 
 [ext_resource type="Texture2D" uid="uid://q2876bkq575f" path="res://assets/Terrain/Tileset/SewerBlue_PNG.png" id="1_8rl7k"]
 [ext_resource type="PackedScene" uid="uid://cadnjm2kabw85" path="res://src/entities/player/player.tscn" id="2_juem4"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://bmet4w56qson1" path="res://src/ui/game_over_screen.tscn" id="8_gameover"]
 [ext_resource type="Script" uid="uid://d0k33necvtl1q" path="res://src/level/level_1.gd" id="9_level_script"]
 [ext_resource type="Script" uid="uid://chvx0b6moj38m" path="res://src/ui/gam/camera_2d.gd" id="10_camera_script"]
+[ext_resource type="PackedScene" path="res://src/effects/firefly_overlay.tscn" id="11_firefly"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jja43"]
 texture = ExtResource("1_8rl7k")
@@ -180,3 +181,5 @@ position = Vector2(-159, 168)
 [node name="riot_guard" parent="." instance=ExtResource("4_rhgx4")]
 position = Vector2(-143, -149)
 scale = Vector2(0.5, 0.5)
+
+[node name="FireflyOverlay" parent="." instance=ExtResource("11_firefly")]
